@@ -1,0 +1,9 @@
+{
+  "name": "cloudynt:cloudyReference",
+  "fields": [
+    {
+      "name": "j:node",
+      "selectorType": "CloudinaryPicker"
+    }
+  ]
+}

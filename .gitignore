@@ -1,0 +1,21 @@
+# Eclipse
+/.classpath
+/.project
+/.settings
+
+# Intellij
+.idea
+*.iml
+*.ipr
+
+# Maven
+target
+
+# Jahia DX Studio
+repository.xml.generated
+
+# Content Editor Extension
+node
+node_modules
+yarn-error.log
+/src/main/resources/javascript/apps

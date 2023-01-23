@@ -1,0 +1,12 @@
+import {registry} from '@jahia/ui-extender';
+import {CloudinaryPicker} from './CloudinaryPicker';
+
+export default function () {
+    registry.add('callback', 'cloudinaryPickerSelectorType',{
+        targets:['jahiaApp-init:20'],
+        callback: () => {
+            registry.add('selectorType','CloudinaryPicker', {cmp: CloudinaryPicker, supportMultiple:false});
+            console.debug('%c CloudinaryPicker Editor Extensions  is activated', 'color: #3c8cba');
+        }
+    })
+}

@@ -1,0 +1,12 @@
+<jnt = 'http://www.jahia.org/jahia/nt/1.0'>
+<jmix = 'http://www.jahia.org/jahia/mix/1.0'>
+<cloudymix = 'http://modules.se.jahia.org/cloudinary/mix/1.0'>
+<cloudynt = 'http://modules.se.jahia.org/cloudinary/nt/1.0'>
+<cloudy = 'http://modules.se.jahia.org/cloudinary/1.0'>
+
+[cloudymix:cloudyAsset] > jmix:structuredContent, jmix:tagged, jmix:keywords, mix:title mixin
+ - cloudy:id (string) fulltextsearchable=no
+ - cloudy:externalId (string) fulltextsearchable=no
+
+[cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
+ - j:node (weakreference) < 'cloudymix:cloudyAsset'
