@@ -3,6 +3,9 @@ import {CloudinaryPickerCmp} from './components/CloudinaryPickerCmp';
 
 export const CloudinaryPicker = () => {
     return (
-        <CloudinaryPickerCmp />
+        <>
+            <CloudinaryPickerCmp />
+        </>
+
     )
 }

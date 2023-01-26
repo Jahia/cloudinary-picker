@@ -18,6 +18,9 @@
   "jahia": {
     "remotes": {
       "jahia": "javascript/apps/remoteEntry.js"
+    },
+    "apps": {
+      "jahia": "configs/CloudinaryPicker.jsp"
     }
   },
   "dependencies": {

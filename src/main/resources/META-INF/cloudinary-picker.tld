@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+
+    <description>Cloudinary Functions to get credentials</description>
+    <display-name>Cloudinary Credentials Functions</display-name>
+    <tlib-version>1.0.0-SNAPSHOT</tlib-version>
+    <short-name>cloudinary</short-name>
+    <uri>http://www.jahia.org/se/cloudinary</uri>
+
+    <function>
+        <name>config</name>
+        <function-class>org.jahia.se.modules.dam.cloudinary.Functions</function-class>
+        <function-signature>java.util.Map getProviderConfig()</function-signature>
+    </function>
+</taglib>
