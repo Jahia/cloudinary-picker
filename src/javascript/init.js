@@ -2,6 +2,13 @@ import {registry} from '@jahia/ui-extender';
 import {CloudinaryPicker} from './CloudinaryPicker';
 
 export default function () {
+    //load cloudy js
+    const script = document.createElement('script');
+    script.type = 'text/javascript'
+    script.src = 'https://media-library.cloudinary.com/global/all.js';
+    script.async = true;
+    document.getElementsByTagName('head')[0].appendChild(script)
+
     registry.add('callback', 'cloudinaryPickerSelectorType',{
         targets:['jahiaApp-init:20'],
         callback: () => {
