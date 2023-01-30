@@ -5,8 +5,13 @@
 <cloudy = 'http://modules.se.jahia.org/cloudinary/1.0'>
 
 [cloudymix:cloudyAsset] > jmix:structuredContent, jmix:tagged, jmix:keywords, mix:title mixin
- - cloudy:id (string) fulltextsearchable=no
- - cloudy:externalId (string) fulltextsearchable=no
+ - cloudy:assetId (string) fulltextsearchable=no
+ - cloudy:publicId (string) fulltextsearchable=no
+ - cloudy:resourceType (string) fulltextsearchable=no
+ - cloudy:type (string) fulltextsearchable=no
+ - cloudy:format (string) fulltextsearchable=no
+ - cloudy:version (long)
+
 
 [cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
  - j:node (weakreference) < 'cloudymix:cloudyAsset'

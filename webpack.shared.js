@@ -51,7 +51,7 @@ const singletonDeps = [
     '@apollo/react-hooks'
 ];
 
-const notImported = [];
+const notImported = ['@jahia/moonstone'];
 
 module.exports = {
     ...sharedDeps.reduce((acc, item) => ({

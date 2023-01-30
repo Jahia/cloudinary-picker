@@ -1,6 +1,6 @@
 import React from 'react'
-// import {Typography} from '@jahia/moonstone';
-import {Typography,Dialog,DialogTitle,DialogContent} from '@material-ui/core';
+import {Button,Typography} from '@jahia/moonstone';
+import {Dialog,DialogTitle,DialogContent} from '@material-ui/core';
 
 
 export const CloudinaryPickerCmp = () => {
@@ -43,21 +43,31 @@ export const CloudinaryPickerCmp = () => {
     return (
         <>
             {widget &&
-            <button
-                data-sel-media-picker="empty"
-                data-sel-field-picker-action="openPicker"
-                // className={`${classes.add} ${isReadOnly ? classes.addReadOnly : ''}`}
-                type="button"
-                // aria-disabled={isReadOnly}
-                // aria-labelledby={labelledBy}
+            <Button
+
+                label="Button"
                 onClick={handleShow}
-            >
-                <div>
-                    <Typography variant="omega" color="beta" component="span">
-                        vide
-                    </Typography>
-                </div>
-            </button>
+                size="default"
+                variant="default"
+            />
+
+
+
+            // <button
+            //     data-sel-media-picker="empty"
+            //     data-sel-field-picker-action="openPicker"
+            //     // className={`${classes.add} ${isReadOnly ? classes.addReadOnly : ''}`}
+            //     type="button"
+            //     // aria-disabled={isReadOnly}
+            //     // aria-labelledby={labelledBy}
+            //     onClick={handleShow}
+            // >
+            //     <div>
+            //         {/*<Typography variant="omega" color="beta" component="span">*/}
+            //             vide
+            //         {/*</Typography>*/}
+            //     </div>
+            // </button>
             }
             {/*<Dialog*/}
             {/*    open={open}*/}
