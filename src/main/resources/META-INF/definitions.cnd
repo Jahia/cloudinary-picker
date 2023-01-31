@@ -7,11 +7,33 @@
 [cloudymix:cloudyAsset] > jmix:structuredContent, jmix:tagged, jmix:keywords, mix:title mixin
  - cloudy:assetId (string) fulltextsearchable=no
  - cloudy:publicId (string) fulltextsearchable=no
- - cloudy:resourceType (string) fulltextsearchable=no
- - cloudy:type (string) fulltextsearchable=no
+ - cloudy:folder (string) fulltextsearchable=no
  - cloudy:format (string) fulltextsearchable=no
  - cloudy:version (long)
+ - cloudy:resourceType (string) fulltextsearchable=no
+ - cloudy:type (string) fulltextsearchable=no
+ - cloudy:createdAt (string) fulltextsearchable=no
+ - cloudy:uploadedAt (string) fulltextsearchable=no
+ - cloudy:bytes (long)
+ - cloudy:width (long)
+ - cloudy:height (long)
+ - cloudy:aspectRatio (double)
+ - cloudy:url (string) fulltextsearchable=no
+ - cloudy:baseUrl (string) fulltextsearchable=no
+ - cloudy:endUrl (string) fulltextsearchable=no
+ - cloudy:status (string) fulltextsearchable=no
+ - cloudy:accessMode (string) fulltextsearchable=no
+ - cloudy:accessControl (string) multiple fulltextsearchable=no
 
+// - cloudy:tags (string) multiple fulltextsearchable=no
+// - cloudy:metadata (string) multiple fulltextsearchable=no
+
+
+[cloudynt:image] jnt:content, cloudymix:cloudyAsset
+[cloudynt:pdf] jnt:content, cloudymix:cloudyAsset
+[cloudynt:document] jnt:content, cloudymix:cloudyAsset
+[cloudynt:video] jnt:content, cloudymix:cloudyAsset
+ - cloudy:duration (double)
 
 [cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
  - j:node (weakreference) < 'cloudymix:cloudyAsset'
