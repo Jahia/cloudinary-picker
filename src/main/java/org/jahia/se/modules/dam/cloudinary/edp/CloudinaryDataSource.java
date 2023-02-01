@@ -5,8 +5,9 @@ import com.google.common.collect.Sets;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -60,10 +61,11 @@ public class CloudinaryDataSource implements ExternalDataSource{
                     CloudinaryAsset cloudinaryAsset = cloudinaryCacheManager.getCloudinaryAsset(identifier);
                     if(cloudinaryAsset == null){
                         LOGGER.debug("no cacheEntry for : "+identifier);
-                        String path = "/"+cloudinaryProviderConfig.getApiVersion()+"/"+ASSET_ENTRY+"/"+identifier;
-                        Map<String, String> query = new LinkedHashMap<String, String>();
-                        query.put("expand",ASSET_ENTRY_EXPAND);
-                        cloudinaryAsset = queryCloudinary(path,query);
+                        final String path = "/"+cloudinaryProviderConfig.getApiVersion()+"/"+cloudinaryProviderConfig.getCloudName()+"/resources/search";
+                        final StringEntity jsonEntity = new StringEntity("{\"expression\": \"asset_id = "+identifier+"\"}");
+//                        Map<String, String> query = new LinkedHashMap<String, String>();
+//                        query.put("expand",ASSET_ENTRY_EXPAND);
+                        cloudinaryAsset = queryCloudinary(path,jsonEntity);
                         cloudinaryCacheManager.cacheCloudinaryAsset(cloudinaryAsset);
                     }
                     ExternalData data = new ExternalData(identifier, "/"+identifier, cloudinaryAsset.getJahiaNodeType(), cloudinaryAsset.getProperties());
@@ -123,38 +125,41 @@ public class CloudinaryDataSource implements ExternalDataSource{
         return false;
     }
 
-    private CloudinaryAsset queryCloudinary(String path, Map<String, String> query) throws RepositoryException {
-        LOGGER.debug("Query Cloudinary with path : {} and query : {}",path,query);
+    private CloudinaryAsset queryCloudinary(String path, StringEntity jsonEntity) throws RepositoryException {
+        LOGGER.debug("Query Cloudinary with path : {} and jsonEntity : {}",path,jsonEntity);
         try {
-            String cloudName = cloudinaryProviderConfig.getCloudName();
+            String schema = cloudinaryProviderConfig.getApiSchema();
+            String endpoint = cloudinaryProviderConfig.getApiEndPoint();
             String apiKey = cloudinaryProviderConfig.getApiKey();
             String apiSecret = cloudinaryProviderConfig.getApiSecret();
-            List<NameValuePair> parameters = new ArrayList<>(query.size());
 
-            for (Map.Entry<String, String> entry : query.entrySet()) {
-                parameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-            }
+//            List<NameValuePair> parameters = new ArrayList<>(query.size());
+
+//            for (Map.Entry<String, String> entry : query.entrySet()) {
+//                parameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+//            }
 
             URIBuilder builder = new URIBuilder()
-                    .setScheme("https")
+                    .setScheme(schema)
                     .setHost(endpoint)
-                    .setPath(path)
-                    .setParameters(parameters);
+                    .setPath(path);
 
             URI uri = builder.build();
 
             long l = System.currentTimeMillis();
-            HttpGet getMethod = new HttpGet(uri);
+            final HttpPost postMethod = new HttpPost(uri);
+            postMethod.setEntity(jsonEntity);
 
             //NOTE Cloudinary return content in ISO-8859-1 even if Accept-Charset = UTF-8 is set.
             //Need to use appropriate charset later to read the inputstream response.
-            getMethod.setHeader(HttpHeaders.AUTHORIZATION,"Bearer "+cloudinarySite+"/"+cloudinaryToken);
-//            getMethod.setRequestHeader("Content-Type","application/json");
+            String encoding = Base64.getEncoder().encodeToString((apiKey+":"+apiSecret).getBytes("UTF-8"));
+            postMethod.setHeader(HttpHeaders.AUTHORIZATION,"Basic " + encoding);
+            postMethod.setHeader("Content-Type","application/json");
 //            getMethod.setRequestHeader("Accept-Charset","ISO-8859-1");
 //            getMethod.setRequestHeader("Accept-Charset","UTF-8");
             CloseableHttpResponse resp = null;
             try {
-                resp = httpClient.execute(getMethod);
+                resp = httpClient.execute(postMethod);
                 CloudinaryAsset cloudinaryAsset = mapper.readValue(EntityUtils.toString(resp.getEntity()),CloudinaryAsset.class);
                 return cloudinaryAsset;
 

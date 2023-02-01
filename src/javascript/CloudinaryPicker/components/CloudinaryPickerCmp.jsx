@@ -1,24 +1,58 @@
 import React from 'react'
-import {Button,Typography} from '@jahia/moonstone';
-import {Dialog,DialogTitle,DialogContent} from '@material-ui/core';
+import {FileImage} from '@jahia/moonstone';
+import {LoaderOverlay} from '../../DesignSystem/LoaderOverlay';
+import {useTranslation} from 'react-i18next';
+import {postData} from "../engine";
+import {useQuery} from "@apollo/react-hooks";
+import {edpCoudinaryContentUUIDQuery} from "./edpCoudinaryContentUUID.gql-queries";
+import {edpCoudinaryContentPropsQuery} from "./edpCoudinaryContentProps.gql-queries";
+import {ReferenceCard} from "./Viewer";
+
+const _getUuid = (edpContentPath) => {
+    const variables = {
+        edpContentPath,
+        skip: !edpContentPath
+    };
+
+    // Call the EDP to get uuid
+    const {loading, error, data} = useQuery(edpCoudinaryContentUUIDQuery, {
+        variables
+    });
+
+    if (loading || error || !data || !edpContentPath) {
+        console.log("[_GetUuid] loading, error, !data, !edpContentPath",loading, error, !data, !edpContentPath)
+        return; // {error, loading, notFound: Boolean(path)};
+    }
+    return data.jcr?.result?.uuid;
+};
 
 
-export const CloudinaryPickerCmp = () => {
+export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
     // const [open,setOpen] = React.useState(false);
     const [widget,setWidget] = React.useState(null);
+    const [uuid,setUuid] = React.useState(value);
+    const {t} = useTranslation();
 
+    const config = window.contextJsParameters.config?.cloudinary;
     React.useEffect( () => {
-        if(!window.contextJsParameters.config?.cloudinary?.cloudName ||
-            !window.contextJsParameters.config?.cloudinary?.apiKey){
+        if(!config?.cloudName || !config?.apiKey){
             console.error("oups... cloudinary cloudName and apiKey are not configured! Please fill the cloudinary_picker_credentials.cfg file.")
         }else{
             if(window.cloudinary){
                 setWidget(window.cloudinary.createMediaLibrary({
-                    cloud_name: window.contextJsParameters.config.cloudinary.cloudName,
-                    api_key: window.contextJsParameters.config.cloudinary.apiKey,
+                    cloud_name: config.cloudName,
+                    api_key: config.apiKey,
                 }, {
                     insertHandler: (data) => {
                         console.log("cloudinary selected content : ",data);
+                        //#1 fetch asset_id
+                        const apiData = postData(
+                            "/resources/search",
+                            {expression: `public_id=${data.assets[0].public_id} && resource_type=${data.assets[0].resource_type}`}
+                        );
+                        //#2 create record and get uuid
+                        setUuid(_getUuid(apiData.resources[0].asset_id));
+                        //#3 query content data ?
                     }
                 } ));
             }else{
@@ -26,64 +60,63 @@ export const CloudinaryPickerCmp = () => {
             }
         }
     },[])
+
+    const variables = {
+        uuid,
+        language: editorContext.lang,
+        skip: !uuid
+    };
+    // Console.log("[WidenPicker] variables for WidenPickerFilledQuery : ",variables);
+
+    const {loading, error, data} = useQuery(edpCoudinaryContentPropsQuery, {
+        variables
+    });
+
+    if (error) {
+        const message = t(
+            'jcontent:label.jcontent.error.queryingContent',
+            {details: error.message ? error.message : ''}
+        );
+
+        console.warn(message);
+    }
+
+    if (loading) {
+        return <LoaderOverlay/>;
+    }
+
+    let fieldData = null;
+    const cloudinaryJcrProps = data?.jcr?.result;
+
+    if(cloudinaryJcrProps)
+        fieldData = {
+            name : cloudinaryJcrProps.displayName,
+            resourceType: cloudinaryJcrProps.resourceType?.value,
+            format: cloudinaryJcrProps.format?.value,
+            url: cloudinaryJcrProps.url?.value,
+            baseUrl: cloudinaryJcrProps.baseUrl?.value,
+            endUrl: cloudinaryJcrProps.endUrl?.value,
+            width: cloudinaryJcrProps.width?.value,
+            height: cloudinaryJcrProps.height?.value,
+            bytes: cloudinaryJcrProps.bytes?.value,
+            aspectRatio: cloudinaryJcrProps.aspectRatio?.value,
+        }
+
+
     const handleShow = () =>
         widget.show();
-        // setOpen(true);
-
-    // const handleClose = () =>
-    //     setOpen(false);
-
-    // const dialogConfig = {
-    //     fullWidth: true,
-    //     maxWidth: 'xl',
-    //     dividers: true
-    // };
-
 
     return (
         <>
             {widget &&
-            <Button
-
-                label="Button"
+            <ReferenceCard
+                isReadOnly={field.readOnly}
+                emptyLabel="Add Cloudinary Asset"
+                emptyIcon={<FileImage/>}
+                labelledBy={`${field.name}-label`}
+                fieldData={fieldData}
                 onClick={handleShow}
-                size="default"
-                variant="default"
-            />
-
-
-
-            // <button
-            //     data-sel-media-picker="empty"
-            //     data-sel-field-picker-action="openPicker"
-            //     // className={`${classes.add} ${isReadOnly ? classes.addReadOnly : ''}`}
-            //     type="button"
-            //     // aria-disabled={isReadOnly}
-            //     // aria-labelledby={labelledBy}
-            //     onClick={handleShow}
-            // >
-            //     <div>
-            //         {/*<Typography variant="omega" color="beta" component="span">*/}
-            //             vide
-            //         {/*</Typography>*/}
-            //     </div>
-            // </button>
-            }
-            {/*<Dialog*/}
-            {/*    open={open}*/}
-            {/*    fullWidth={dialogConfig.fullWidth}*/}
-            {/*    maxWidth={dialogConfig.maxWidth}*/}
-            {/*    onClose={handleClose}*/}
-            {/*>*/}
-            {/*    <DialogTitle closeButton>*/}
-            {/*        Cloudinary Picker*/}
-            {/*    </DialogTitle>*/}
-            {/*    <DialogContent dividers={dialogConfig.dividers}>*/}
-            {/*        Picker !*/}
-            {/*        /!*<Picker selectedItemId={fieldData?.wdenid}/>*!/*/}
-
-            {/*    </DialogContent>*/}
-            {/*</Dialog>*/}
+            />}
         </>
 
     )

@@ -118,6 +118,16 @@ const styles = theme => ({
     }
 });
 
+// const formatDate = date => {
+//     if (!date) {
+//         return;
+//     }
+//
+//     const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+//     date = new Date(date);
+//     return date.toLocaleDateString(locale, options);
+// };
+
 const ReferenceCardCmp = ({
     classes,
     isReadOnly,
@@ -145,8 +155,6 @@ const ReferenceCardCmp = ({
                         (isReadOnly ? classes.fieldContainerReadOnly : ''),
                         (isDraggable ? classes.draggableIcon : '')
                     )}
-                    data-sel-field-picker="filled"
-                    data-sel-field-picker-action="openPicker"
                     role="button"
                     tabIndex="0"
                     aria-labelledby={labelledBy}
@@ -155,18 +163,18 @@ const ReferenceCardCmp = ({
                             return;
                         }
 
-                        onClick(true);
+                        onClick();
                     }}
                 >
                     <div className={classes.fieldFigureContainer}>
-                        <img src={fieldData.url} className={classes.fieldImage} aria-labelledby={nameId} alt=""/>
+                        <img src={`${fieldData.baseUrl}/w_200/${fieldData.endUrl}`} className={classes.fieldImage} aria-labelledby={nameId} alt=""/>
                     </div>
                     <div className={classes.fieldSelectedMetadata}>
                         <Typography data-sel-field-picker-name variant="caption" id={nameId}>
                             {fieldData.name}
                         </Typography>
                         <Typography data-sel-field-picker-info variant="body">
-                            {fieldData.info}
+                            {fieldData.width} x {fieldData.height} px (r:{fieldData.aspectRatio} )
                         </Typography>
                     </div>
                 </article>
@@ -176,8 +184,6 @@ const ReferenceCardCmp = ({
 
     return (
         <button
-            data-sel-media-picker="empty"
-            data-sel-field-picker-action="openPicker"
             className={clsx(classes.add, isReadOnly && classes.addReadOnly, isError && classes.addError)}
             type="button"
             aria-disabled={isReadOnly}
@@ -187,7 +193,7 @@ const ReferenceCardCmp = ({
                     return;
                 }
 
-                onClick(true);
+                onClick();
             }}
         >
             {!isReadOnly &&
@@ -218,7 +224,7 @@ ReferenceCardCmp.propTypes = {
     fieldData: PropTypes.shape({
         url: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        info: PropTypes.string.isRequired
+        // info: PropTypes.string.isRequired
     }),
     isDraggable: PropTypes.bool,
     emptyLabel: PropTypes.string,
