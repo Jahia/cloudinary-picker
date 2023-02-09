@@ -8,7 +8,7 @@ import {edpCoudinaryContentUUIDQuery} from "./edpCoudinaryContentUUID.gql-querie
 import {edpCoudinaryContentPropsQuery} from "./edpCoudinaryContentProps.gql-queries";
 import {ReferenceCard} from "./Viewer";
 
-const _getUuid = (edpContentPath) => {
+const _GetUuid = (edpContentPath,uuidHandler) => {
     const variables = {
         edpContentPath,
         skip: !edpContentPath
@@ -23,7 +23,9 @@ const _getUuid = (edpContentPath) => {
         console.log("[_GetUuid] loading, error, !data, !edpContentPath",loading, error, !data, !edpContentPath)
         return; // {error, loading, notFound: Boolean(path)};
     }
-    return data.jcr?.result?.uuid;
+    uuidHandler(data.jcr?.result?.uuid);
+
+    return (<></>);
 };
 
 
@@ -46,12 +48,13 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
                     insertHandler: (data) => {
                         console.log("cloudinary selected content : ",data);
                         //#1 fetch asset_id
-                        const apiData = postData(
+                        postData(
                             "/resources/search",
                             {expression: `public_id=${data.assets[0].public_id} && resource_type=${data.assets[0].resource_type}`}
+                        ).then(
+                            //#2 create record and get uuid
+                            apiData => _GetUuid(apiData?.resources[0]?.asset_id,setUuid)
                         );
-                        //#2 create record and get uuid
-                        setUuid(_getUuid(apiData.resources[0].asset_id));
                         //#3 query content data ?
                     }
                 } ));
@@ -60,7 +63,7 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
             }
         }
     },[])
-
+console.log("uuid : ",uuid)
     const variables = {
         uuid,
         language: editorContext.lang,
