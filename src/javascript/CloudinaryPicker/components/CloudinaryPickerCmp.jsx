@@ -3,39 +3,21 @@ import {FileImage} from '@jahia/moonstone';
 import {LoaderOverlay} from '../../DesignSystem/LoaderOverlay';
 import {useTranslation} from 'react-i18next';
 import {postData} from "../engine";
-import {useQuery} from "@apollo/react-hooks";
+import {useQuery,useLazyQuery} from "@apollo/react-hooks";
 import {edpCoudinaryContentUUIDQuery} from "./edpCoudinaryContentUUID.gql-queries";
 import {edpCoudinaryContentPropsQuery} from "./edpCoudinaryContentProps.gql-queries";
 import {ReferenceCard} from "./Viewer";
 
-const _GetUuid = (edpContentPath,uuidHandler) => {
-    const variables = {
-        edpContentPath,
-        skip: !edpContentPath
-    };
-
-    // Call the EDP to get uuid
-    const {loading, error, data} = useQuery(edpCoudinaryContentUUIDQuery, {
-        variables
-    });
-
-    if (loading || error || !data || !edpContentPath) {
-        console.log("[_GetUuid] loading, error, !data, !edpContentPath",loading, error, !data, !edpContentPath)
-        return; // {error, loading, notFound: Boolean(path)};
-    }
-    uuidHandler(data.jcr?.result?.uuid);
-
-    return (<></>);
-};
-
-
 export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
     // const [open,setOpen] = React.useState(false);
     const [widget,setWidget] = React.useState(null);
-    const [uuid,setUuid] = React.useState(value);
+    // const [uuid,setUuid] = React.useState(value);
     const {t} = useTranslation();
 
+    const [loadEdp4UUID, { loading: lazyLoading, data : lazyData }] = useLazyQuery(edpCoudinaryContentUUIDQuery);
+
     const config = window.contextJsParameters.config?.cloudinary;
+
     React.useEffect( () => {
         if(!config?.cloudName || !config?.apiKey){
             console.error("oups... cloudinary cloudName and apiKey are not configured! Please fill the cloudinary_picker_credentials.cfg file.")
@@ -51,23 +33,30 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
                         postData(
                             "/resources/search",
                             {expression: `public_id=${data.assets[0].public_id} && resource_type=${data.assets[0].resource_type}`}
-                        ).then(
+                        ).then( apiData => {
+                            const asset_id = apiData?.resources[0]?.asset_id;
+                            const edpContentPath = config.mountPoint + "/" + asset_id
                             //#2 create record and get uuid
-                            apiData => _GetUuid(apiData?.resources[0]?.asset_id,setUuid)
-                        );
-                        //#3 query content data ?
+                            loadEdp4UUID({
+                                variables: {
+                                    edpContentPath,
+                                    skip: !asset_id
+                                }
+                            })
+                        });
                     }
                 } ));
             }else{
                 console.debug("oups... no window.cloudinary available !")
             }
         }
-    },[])
-console.log("uuid : ",uuid)
+    },[]);
+
+console.log("value : ",value)
     const variables = {
-        uuid,
+        uuid : value,
         language: editorContext.lang,
-        skip: !uuid
+        skip: !value
     };
     // Console.log("[WidenPicker] variables for WidenPickerFilledQuery : ",variables);
 
@@ -84,8 +73,12 @@ console.log("uuid : ",uuid)
         console.warn(message);
     }
 
-    if (loading) {
+    if (loading || lazyLoading) {
         return <LoaderOverlay/>;
+    }
+console.log("lazyData : ",lazyData);
+    if(lazyData){
+        onChange(lazyData.jcr?.result?.uuid)
     }
 
     let fieldData = null;

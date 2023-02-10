@@ -85,9 +85,17 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
     }
 
     private void splitURL(String url, CloudinaryAsset cloudinaryAsset){
-        Pattern urlPattern = Pattern.compile("\"(?<baseUrl>\\.*upload)/(?<endUrl>\\.*)\"");
+        String regex = "(?<baseUrl>.*upload)/(?<endUrl>.*)";
+        Pattern urlPattern = Pattern.compile(regex);
         Matcher matcher = urlPattern.matcher(url);
-        cloudinaryAsset.addProperty(PREFIX+"baseUrl",matcher.group("baseUrl"));
-        cloudinaryAsset.addProperty(PREFIX+"endUrl",matcher.group("endUrl"));
+
+        while (matcher.find()) {
+            String group = matcher.group();
+            int start = matcher.start();
+            int end = matcher.end();
+            System.out.println(group + " " + start + " " + end);
+        }
+//        cloudinaryAsset.addProperty(PREFIX+"baseUrl",matcher.group("baseUrl"));
+//        cloudinaryAsset.addProperty(PREFIX+"endUrl",matcher.group("endUrl"));
     }
 }
