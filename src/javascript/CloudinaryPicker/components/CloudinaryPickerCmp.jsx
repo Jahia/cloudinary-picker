@@ -9,9 +9,7 @@ import {edpCoudinaryContentPropsQuery} from "./edpCoudinaryContentProps.gql-quer
 import {ReferenceCard} from "./Viewer";
 
 export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
-    // const [open,setOpen] = React.useState(false);
     const [widget,setWidget] = React.useState(null);
-    // const [uuid,setUuid] = React.useState(value);
     const {t} = useTranslation();
 
     const [loadEdp4UUID, { loading: lazyLoading, data : lazyData }] = useLazyQuery(edpCoudinaryContentUUIDQuery);
@@ -23,12 +21,14 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
             console.error("oups... cloudinary cloudName and apiKey are not configured! Please fill the cloudinary_picker_credentials.cfg file.")
         }else{
             if(window.cloudinary){
+                //#0 Prepare the cloudinary media lib
                 setWidget(window.cloudinary.createMediaLibrary({
                     cloud_name: config.cloudName,
                     api_key: config.apiKey,
+                    multiple: false //cannot select more than one asset
                 }, {
                     insertHandler: (data) => {
-                        console.log("cloudinary selected content : ",data);
+                        console.debug("cloudinary selected content : ",data);
                         //#1 fetch asset_id
                         postData(
                             "/resources/search",
@@ -52,7 +52,7 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
         }
     },[]);
 
-console.log("value : ",value)
+// console.log("value : ",value)
     const variables = {
         uuid : value,
         language: editorContext.lang,

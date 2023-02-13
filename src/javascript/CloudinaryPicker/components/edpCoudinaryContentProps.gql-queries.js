@@ -14,6 +14,7 @@ export const edpCoudinaryContentPropsQuery = gql`
                 width: property(name: "cloudy:width") {value}
                 height: property(name: "cloudy:height") {value}
                 bytes: property(name: "cloudy:bytes") {value}
+                aspectRatio: property(name: "cloudy:aspectRatio") {value}
                 ...NodeCacheRequiredFields
             }
         }

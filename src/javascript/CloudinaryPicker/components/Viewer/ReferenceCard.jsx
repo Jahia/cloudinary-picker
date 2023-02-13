@@ -189,10 +189,7 @@ const ReferenceCardCmp = ({
             aria-disabled={isReadOnly}
             aria-labelledby={labelledBy}
             onClick={() => {
-                if (isReadOnly) {
-                    return;
-                }
-
+                if (isReadOnly) { return; }
                 onClick();
             }}
         >

@@ -9,20 +9,22 @@
 <c:choose>
     <c:when test="${! empty cloudinaryConfig}">
         window.contextJsParameters.config.cloudinary={
-            <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiSchema']}">
-                apiSchema:"${cloudinaryConfig['cloudinary_provider.apiSchema']}",
-            </c:if>
-            <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiEndPoint']}">
-                apiEndPoint:"${cloudinaryConfig['cloudinary_provider.apiEndPoint']}",
-            </c:if>
-            <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiVersion']}">
-                apiVersion:"${cloudinaryConfig['cloudinary_provider.apiVersion']}",
-            </c:if>
+            <%--Not need anymore due to proxy usage --%>
+<%--            <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiSchema']}">--%>
+<%--                apiSchema:"${cloudinaryConfig['cloudinary_provider.apiSchema']}",--%>
+<%--            </c:if>--%>
+<%--            <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiEndPoint']}">--%>
+<%--                apiEndPoint:"${cloudinaryConfig['cloudinary_provider.apiEndPoint']}",--%>
+<%--            </c:if>--%>
+<%--            <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiVersion']}">--%>
+<%--                apiVersion:"${cloudinaryConfig['cloudinary_provider.apiVersion']}",--%>
+<%--            </c:if>--%>
+<%--            <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiSecret']}">--%>
+<%--                apiSecret:"${cloudinaryConfig['cloudinary_provider.apiSecret']}",--%>
+<%--            </c:if>--%>
+            <%--  ---  --%>
             <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiKey']}">
-                apiKey:"${cloudinaryConfig['cloudinary_provider.apiKey']}",
-            </c:if>
-            <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiSecret']}">
-                apiSecret:"${cloudinaryConfig['cloudinary_provider.apiSecret']}",
+            apiKey:"${cloudinaryConfig['cloudinary_provider.apiKey']}",
             </c:if>
             <c:if test="${! empty cloudinaryConfig['cloudinary_provider.cloudName']}">
                 cloudName:"${cloudinaryConfig['cloudinary_provider.cloudName']}",

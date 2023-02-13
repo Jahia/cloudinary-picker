@@ -89,13 +89,9 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
         Pattern urlPattern = Pattern.compile(regex);
         Matcher matcher = urlPattern.matcher(url);
 
-        while (matcher.find()) {
-            String group = matcher.group();
-            int start = matcher.start();
-            int end = matcher.end();
-            System.out.println(group + " " + start + " " + end);
+        if(matcher.find()){
+            cloudinaryAsset.addProperty(PREFIX+"baseUrl",matcher.group("baseUrl"));
+            cloudinaryAsset.addProperty(PREFIX+"endUrl",matcher.group("endUrl"));
         }
-//        cloudinaryAsset.addProperty(PREFIX+"baseUrl",matcher.group("baseUrl"));
-//        cloudinaryAsset.addProperty(PREFIX+"endUrl",matcher.group("endUrl"));
     }
 }

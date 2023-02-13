@@ -4,6 +4,18 @@
 <cloudynt = 'http://modules.se.jahia.org/cloudinary/nt/1.0'>
 <cloudy = 'http://modules.se.jahia.org/cloudinary/1.0'>
 
+[cloudymix:mediaPickerCd] > jmix:dynamicFieldset mixin
+ extends = cloudymix:mediaReference
+ - cloudy:mediaNode (weakreference) internationalized < cloudymix:widenAsset
+
+[cloudymix:mediaPickerJc] > jmix:dynamicFieldset mixin
+ extends = cloudymix:mediaReference
+ - cloudy:mediaNode (weakreference) internationalized < jnt:file
+
+[cloudymix:mediaReference] mixin
+ - cloudy:mediaPicker (string, choicelist) indexed=no
+
+
 [cloudymix:cloudyAsset] > jmix:structuredContent, jmix:tagged, jmix:keywords, mix:title mixin
  - cloudy:assetId (string) fulltextsearchable=no
  - cloudy:publicId (string) fulltextsearchable=no
@@ -31,6 +43,15 @@
 
 [cloudynt:video] > jnt:content, cloudymix:cloudyAsset
  - cloudy:duration (double)
+
+
+[cloudymix:imageMediaSettings] mixin
+ extends = cloudynt:cloudyReference
+ itemtype = content
+ - cloudy:width (string)
+ - cloudy:height (string)
+// - cloudy:defaultImageSize (long)
+// - cloudy:imageSizes (long) multiple
 
 [cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
  - j:node (weakreference) < 'cloudymix:cloudyAsset'
