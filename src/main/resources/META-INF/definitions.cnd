@@ -6,7 +6,7 @@
 
 [cloudymix:mediaPickerCd] > jmix:dynamicFieldset mixin
  extends = cloudymix:mediaReference
- - cloudy:mediaNode (weakreference) internationalized < cloudymix:widenAsset
+ - cloudy:mediaNode (weakreference) internationalized < cloudymix:cloudyAsset
 
 [cloudymix:mediaPickerJc] > jmix:dynamicFieldset mixin
  extends = cloudymix:mediaReference
@@ -38,11 +38,14 @@
  - cloudy:accessControl (string) multiple fulltextsearchable=no
 
 [cloudynt:image] > jnt:content, cloudymix:cloudyAsset
-[cloudynt:pdf] > jnt:content, cloudymix:cloudyAsset
 [cloudynt:document] > jnt:content, cloudymix:cloudyAsset
+
+[cloudynt:pdf] > jnt:content, cloudymix:cloudyAsset
+ - cloudy:poster (string) fulltextsearchable=no
 
 [cloudynt:video] > jnt:content, cloudymix:cloudyAsset
  - cloudy:duration (double)
+ - cloudy:poster (string) fulltextsearchable=no
 
 
 [cloudymix:imageMediaSettings] mixin

@@ -24,7 +24,7 @@
 <%--            </c:if>--%>
             <%--  ---  --%>
             <c:if test="${! empty cloudinaryConfig['cloudinary_provider.apiKey']}">
-            apiKey:"${cloudinaryConfig['cloudinary_provider.apiKey']}",
+                apiKey:"${cloudinaryConfig['cloudinary_provider.apiKey']}",
             </c:if>
             <c:if test="${! empty cloudinaryConfig['cloudinary_provider.cloudName']}">
                 cloudName:"${cloudinaryConfig['cloudinary_provider.cloudName']}",

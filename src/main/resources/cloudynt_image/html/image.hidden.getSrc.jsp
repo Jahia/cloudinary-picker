@@ -36,11 +36,4 @@
 </c:choose>
 
 <c:set var="url" value="${baseUrl}${urlParams}/${endUrl}"/>
-
-<utility:logger level="DEBUG" value="*** cloudinary asset alt : ${alt}"/>
-<utility:logger level="DEBUG" value="*** cloudinary asset url : ${url}"/>
-
-<img src="${url}" width="100%"
-     class="${class}"
-     alt="${alt}"
-/>
+<c:set target="${moduleMap}" property="src" value="${url}" />

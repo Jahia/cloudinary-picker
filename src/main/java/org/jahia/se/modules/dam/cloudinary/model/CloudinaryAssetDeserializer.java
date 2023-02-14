@@ -23,6 +23,25 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
     private static final String CONTENT_TYPE_PDF = "cloudynt:pdf";
     private static final String CONTENT_TYPE_DOC = "cloudynt:document";
 
+    private class Urls {
+        private String baseUrl;
+        private String endUrl;
+
+        public Urls(String url){
+            String regex = "(?<baseUrl>.*upload)/(?<endUrl>.*)";
+            Pattern urlPattern = Pattern.compile(regex);
+            Matcher matcher = urlPattern.matcher(url);
+
+            if(matcher.find()){
+                baseUrl=matcher.group("baseUrl");
+                endUrl=matcher.group("endUrl");
+            }
+        }
+        public String getBaseUrl(){return baseUrl;}
+        public String getEndUrl(){return endUrl;}
+    }
+
+
     public CloudinaryAssetDeserializer() {
         this(null);
     }
@@ -40,6 +59,8 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
 
         String resourceType = cloudinaryNode.get("resource_type").textValue();
         String format = cloudinaryNode.get("format").textValue();
+        String url = cloudinaryNode.get("secure_url").textValue();
+        Urls urls = new Urls(url);
 
         cloudinaryAsset.setId(cloudinaryNode.get("asset_id").textValue());
         cloudinaryAsset.addProperty(PREFIX+"assetId",cloudinaryNode.get("asset_id").textValue());
@@ -56,17 +77,20 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
         cloudinaryAsset.addProperty(PREFIX+"width",cloudinaryNode.get("width").longValue());
         cloudinaryAsset.addProperty(PREFIX+"height",cloudinaryNode.get("height").longValue());
         cloudinaryAsset.addProperty(PREFIX+"aspectRatio",cloudinaryNode.get("aspect_ratio").doubleValue());
-        cloudinaryAsset.addProperty(PREFIX+"url",cloudinaryNode.get("secure_url").textValue());
+        cloudinaryAsset.addProperty(PREFIX+"url",url);
         cloudinaryAsset.addProperty(PREFIX+"status",cloudinaryNode.get("status").textValue());
         cloudinaryAsset.addProperty(PREFIX+"accessMode",cloudinaryNode.get("access_mode").textValue());
         cloudinaryAsset.addProperty(PREFIX+"accessControl",cloudinaryNode.get("access_control").textValue());
 
-        splitURL(cloudinaryNode.get("secure_url").textValue(),cloudinaryAsset);
+        cloudinaryAsset.addProperty(PREFIX+"baseUrl",urls.getBaseUrl());
+        cloudinaryAsset.addProperty(PREFIX+"endUrl",urls.getEndUrl());
+//        splitURL(cloudinaryNode.get("secure_url").textValue(),cloudinaryAsset);
 
         switch (resourceType){
             case RESOURCE_TYPE_IMAGE :
-                if(format == FORMAT_PDF){
+                if( FORMAT_PDF.equals(format) ){
                     cloudinaryAsset.setJahiaNodeType(CONTENT_TYPE_PDF);
+                    addPoster(urls.getEndUrl(),cloudinaryAsset);
                 }else{
                     cloudinaryAsset.setJahiaNodeType(CONTENT_TYPE_IMAGE);
                 }
@@ -75,6 +99,7 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
             case RESOURCE_TYPE_VIDEO:
                 cloudinaryAsset.setJahiaNodeType(CONTENT_TYPE_VIDEO);
                 cloudinaryAsset.addProperty(PREFIX+"duration",cloudinaryNode.get("duration").doubleValue());
+                addPoster(urls.getEndUrl(),cloudinaryAsset);
                 break;
 
             default:
@@ -84,14 +109,19 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
         return cloudinaryAsset;
     }
 
-    private void splitURL(String url, CloudinaryAsset cloudinaryAsset){
-        String regex = "(?<baseUrl>.*upload)/(?<endUrl>.*)";
-        Pattern urlPattern = Pattern.compile(regex);
-        Matcher matcher = urlPattern.matcher(url);
-
-        if(matcher.find()){
-            cloudinaryAsset.addProperty(PREFIX+"baseUrl",matcher.group("baseUrl"));
-            cloudinaryAsset.addProperty(PREFIX+"endUrl",matcher.group("endUrl"));
-        }
+    private void addPoster(String url, CloudinaryAsset cloudinaryAsset){
+        url = url.substring(0, url.lastIndexOf('.')).concat(".jpg") ;
+        cloudinaryAsset.addProperty(PREFIX+"poster",url);
     }
+
+//    private void splitURL(String url, CloudinaryAsset cloudinaryAsset){
+//        String regex = "(?<baseUrl>.*upload)/(?<endUrl>.*)";
+//        Pattern urlPattern = Pattern.compile(regex);
+//        Matcher matcher = urlPattern.matcher(url);
+//
+//        if(matcher.find()){
+//            cloudinaryAsset.addProperty(PREFIX+"baseUrl",matcher.group("baseUrl"));
+//            cloudinaryAsset.addProperty(PREFIX+"endUrl",matcher.group("endUrl"));
+//        }
+//    }
 }

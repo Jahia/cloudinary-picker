@@ -11,6 +11,7 @@ export const edpCoudinaryContentPropsQuery = gql`
                 url: property(name: "cloudy:url") {value}
                 baseUrl: property(name: "cloudy:baseUrl") {value}
                 endUrl: property(name: "cloudy:endUrl") {value}
+                poster: property(name: "cloudy:poster") {value}
                 width: property(name: "cloudy:width") {value}
                 height: property(name: "cloudy:height") {value}
                 bytes: property(name: "cloudy:bytes") {value}

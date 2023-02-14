@@ -92,6 +92,7 @@ console.log("lazyData : ",lazyData);
             url: cloudinaryJcrProps.url?.value,
             baseUrl: cloudinaryJcrProps.baseUrl?.value,
             endUrl: cloudinaryJcrProps.endUrl?.value,
+            poster: cloudinaryJcrProps.poster?.value,
             width: cloudinaryJcrProps.width?.value,
             height: cloudinaryJcrProps.height?.value,
             bytes: cloudinaryJcrProps.bytes?.value,

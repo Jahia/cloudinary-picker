@@ -1,0 +1,15 @@
+{
+  "name": "cloudymix:mediaPickerJc",
+  "fields": [
+    {
+      "name": "cloudy:mediaNode",
+      "selectorType": "Picker",
+      "selectorOptions": [
+        {
+          "name": "type",
+          "value": "image"
+        }
+      ]
+    }
+  ]
+}

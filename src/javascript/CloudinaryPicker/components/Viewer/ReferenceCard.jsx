@@ -139,6 +139,13 @@ const ReferenceCardCmp = ({
     onClick,
     isDraggable
 }) => {
+    const getImgUrl = () => {
+        if(fieldData.poster){
+            return `${fieldData.baseUrl}/w_200/${fieldData.poster}`
+        }else{
+            return `${fieldData.baseUrl}/w_200/${fieldData.endUrl}`
+        }
+    }
     // If card have already data
     if (fieldData) {
         const nameId = `${labelledBy}-name`;
@@ -167,7 +174,7 @@ const ReferenceCardCmp = ({
                     }}
                 >
                     <div className={classes.fieldFigureContainer}>
-                        <img src={`${fieldData.baseUrl}/w_200/${fieldData.endUrl}`} className={classes.fieldImage} aria-labelledby={nameId} alt=""/>
+                        <img src={getImgUrl()} className={classes.fieldImage} aria-labelledby={nameId} alt=""/>
                     </div>
                     <div className={classes.fieldSelectedMetadata}>
                         <Typography data-sel-field-picker-name variant="caption" id={nameId}>
