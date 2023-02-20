@@ -52,13 +52,11 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
         }
     },[]);
 
-// console.log("value : ",value)
     const variables = {
         uuid : value,
         language: editorContext.lang,
         skip: !value
     };
-    // Console.log("[WidenPicker] variables for WidenPickerFilledQuery : ",variables);
 
     const {loading, error, data} = useQuery(edpCoudinaryContentPropsQuery, {
         variables
@@ -76,7 +74,7 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
     if (loading || lazyLoading) {
         return <LoaderOverlay/>;
     }
-console.log("lazyData : ",lazyData);
+
     if(lazyData){
         onChange(lazyData.jcr?.result?.uuid)
     }
@@ -115,6 +113,5 @@ console.log("lazyData : ",lazyData);
                 onClick={handleShow}
             />}
         </>
-
     )
 }

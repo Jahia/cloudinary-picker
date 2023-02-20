@@ -58,3 +58,5 @@
 
 [cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
  - j:node (weakreference) < 'cloudymix:cloudyAsset'
+
+//[cloudynt:testMixin] > jnt:content, cloudymix:mediaReference, jmix:multimediaContent

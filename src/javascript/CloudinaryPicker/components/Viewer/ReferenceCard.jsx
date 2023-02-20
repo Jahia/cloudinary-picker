@@ -118,15 +118,13 @@ const styles = theme => ({
     }
 });
 
-// const formatDate = date => {
-//     if (!date) {
-//         return;
-//     }
-//
-//     const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-//     date = new Date(date);
-//     return date.toLocaleDateString(locale, options);
-// };
+const getImgUrl = ({poster,baseUrl,endUrl}) => {
+    if(poster){
+        return `${baseUrl}/w_200/${poster}`
+    }else{
+        return `${baseUrl}/w_200/${endUrl}`
+    }
+}
 
 const ReferenceCardCmp = ({
     classes,
@@ -139,13 +137,7 @@ const ReferenceCardCmp = ({
     onClick,
     isDraggable
 }) => {
-    const getImgUrl = () => {
-        if(fieldData.poster){
-            return `${fieldData.baseUrl}/w_200/${fieldData.poster}`
-        }else{
-            return `${fieldData.baseUrl}/w_200/${fieldData.endUrl}`
-        }
-    }
+
     // If card have already data
     if (fieldData) {
         const nameId = `${labelledBy}-name`;
@@ -174,7 +166,11 @@ const ReferenceCardCmp = ({
                     }}
                 >
                     <div className={classes.fieldFigureContainer}>
-                        <img src={getImgUrl()} className={classes.fieldImage} aria-labelledby={nameId} alt=""/>
+                        <img src={getImgUrl({
+                            poster:fieldData.poster,
+                            baseUrl:fieldData.baseUrl,
+                            endUrl:fieldData.endUrl
+                        })} className={classes.fieldImage} aria-labelledby={nameId} alt=""/>
                     </div>
                     <div className={classes.fieldSelectedMetadata}>
                         <Typography data-sel-field-picker-name variant="caption" id={nameId}>
@@ -226,9 +222,13 @@ ReferenceCardCmp.propTypes = {
     classes: PropTypes.object.isRequired,
     onClick: PropTypes.func,
     fieldData: PropTypes.shape({
-        url: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        // info: PropTypes.string.isRequired
+        baseUrl: PropTypes.string.isRequired,
+        endUrl: PropTypes.string.isRequired,
+        poster: PropTypes.string,
+        width: PropTypes.string.isRequired,
+        height: PropTypes.string.isRequired,
+        aspectRatio: PropTypes.string.isRequired,
     }),
     isDraggable: PropTypes.bool,
     emptyLabel: PropTypes.string,
