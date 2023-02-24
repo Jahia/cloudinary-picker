@@ -44,7 +44,7 @@ The module can be installed in 2 ways, from the source or from the store.
 1. In jContent, go to `Administration` panel.
 1. In the `Server` section, expand `Modules and Extensions` and click `Modules`.
 1. From the right panel, click `SELECT MODULE` and select the jar file in the *target* repository.
-1. Finaly click `UPLOAD`.
+1. Finally, click `UPLOAD`.
 
 #### From the store
 1. In jContent, navigate to `Administration`.
@@ -134,7 +134,7 @@ The data flow is composed of 8 actions of which 2 are optional and depend on the
 4. When the user saves their choice from the picker, a content path is created. This path is built with
    a static part `/sites/systemsite/contents/dam-cloudinary`, and the `asset_id` of the Cloudinary asset.
 
-   jContent cannot use this path directly as it expects to receive a jahia node id.
+   jContent cannot use this path directly as it expects to receive a Jahia node id.
    Therefore, the content picker executes a GraphQL call to create the node and get its id back.
    During this call, the path is resolved and mapped to a Jahia node
    with the help of the `Cloudinary Asset Provider`.
