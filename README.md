@@ -4,20 +4,17 @@ This module contains the implementation of the Cloudinary Content Picker for Jah
 
 With this module, a contributor can easily add a Cloudinary media asset to a Jahia page.
 
-![](./doc/images/master.png)
+![](./doc/images/main.png)
 
 
 - [Module content](#module-content)
 - [Quick Start](#quick-start)
     - [Deploy the module](#deploy-the-module)
+      - [From the source](#from-the-source)
+      - [From the store](#from-the-store)
     - [Post Install (optional)](#post-install-optional)
 - [Module details](#module-details)
     - [Data flow](#data-flow)
-    - [Cloudinary assets in jContent](#cloudinary-assets-in-jcontent)
-    - [Cloudinary Picker](#cloudinary-picker)
-    - [Cloudinary Provider](#cloudinary-provider)
-    - [How to handle a new media content created in Cloudinary - example of the audio content type](#how-to-handle-a-new-media-asset-created-in-cloudinary---example-of-the-audio-content-type)
-
 
 ## Module content
 
