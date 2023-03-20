@@ -4,16 +4,15 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="utility" uri="http://www.jahia.org/tags/utilityLib" %>
 
-<c:set var="alt" value="${fn:escapeXml(currentNode.displayableName)}"/>
+
 <c:set var="baseUrl" value="${currentNode.properties['cloudy:baseUrl'].string}"/>
 <c:set var="endUrl" value="${currentNode.properties['cloudy:endUrl'].string}"/>
 
+<utility:logger level="DEBUG" value="***[cloudinaryImage] cloudinaryNode width: ${currentResource.moduleParams.width}"/>
+<utility:logger level="DEBUG" value="***[cloudinaryImage] cloudinaryNode height: ${currentResource.moduleParams.height}"/>
+
 <c:set var="h_" value="h_"/>
 <c:set var="w_" value="w_"/>
-
-
-<%--<utility:logger level="INFO" value="***[cloudinaryImage] cloudinaryNode width: ${currentResource.moduleParams.width}"/>--%>
-<%--<utility:logger level="INFO" value="***[cloudinaryImage] cloudinaryNode height: ${currentResource.moduleParams.height}"/>--%>
 
 <c:set var="height" value="${not empty currentResource.moduleParams.height ?
     'h_'.concat(currentResource.moduleParams.height) : ''}"/>
@@ -35,5 +34,5 @@
     </c:otherwise>
 </c:choose>
 
-<c:set var="url" value="${baseUrl}${urlParams}/${endUrl}"/>
-<c:set target="${moduleMap}" property="src" value="${url}" />
+<c:url value="${baseUrl}${urlParams}/${endUrl}"/>
+<%--<c:out value="${url}" />--%>
