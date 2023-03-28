@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +58,10 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
         JsonNode response = jsonParser.getCodec().readTree(jsonParser);
         JsonNode cloudinaryNode = response.get("resources").get(0);
         CloudinaryAsset cloudinaryAsset = new CloudinaryAsset();
+
+//        List<String> mixinTypes = new ArrayList<String>();
+//        "cloudymix:cloudyAsset"
+//        cloudinaryAsset.addProperty("jcr:mixinTypes","cloudymix:cloudyAsset");
 
         String resourceType = cloudinaryNode.get("resource_type").textValue();
         String format = cloudinaryNode.get("format").textValue();

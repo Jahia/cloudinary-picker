@@ -69,6 +69,10 @@ public class CloudinaryDataSource implements ExternalDataSource{
                         cloudinaryCacheManager.cacheCloudinaryAsset(cloudinaryAsset);
                     }
                     ExternalData data = new ExternalData(identifier, "/"+identifier, cloudinaryAsset.getJahiaNodeType(), cloudinaryAsset.getProperties());
+//                    List<String> mixins = new ArrayList<String>();
+//                    mixins.add("cloudymix:cloudyAsset");
+//                    data.setMixin(mixins);
+
                     return data;
                 }
             }
