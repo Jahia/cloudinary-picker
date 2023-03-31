@@ -14,7 +14,11 @@ export default function () {
         callback: () => {
             registry.add('selectorType','CloudinaryPicker', {cmp: CloudinaryPicker, supportMultiple:false});
             console.debug('%c CloudinaryPicker Editor Extensions  is activated', 'color: #3c8cba');
-            registry.add('damSelectorConfiguration','CloudinaryPicker',{types: ['cloudymix:cloudyAsset'],label:'Cloudinary'});
+            registry.add('damSelectorConfiguration','CloudinaryPicker',{
+                types: ['cloudymix:cloudyAsset'],
+                label:'Cloudinary',
+                module:'cloudinary-picker'
+            });
         }
     })
 }
