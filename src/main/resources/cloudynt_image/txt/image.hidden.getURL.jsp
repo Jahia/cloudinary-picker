@@ -19,20 +19,26 @@
 <c:set var="width" value="${not empty currentResource.moduleParams.width ?
     'w_'.concat(currentResource.moduleParams.width) : ''}"/>
 
-<c:set var="urlParams" value=""/>
-<c:choose>
-    <c:when test="${not empty height}">
-        <c:set var="urlParams" value="/${height}"/>
-        <c:if test="${not empty width}">
-            <c:set var="urlParams" value="${urlParams},${width}"/>
-        </c:if>
-    </c:when>
-    <c:otherwise>
-        <c:if test="${not empty width}">
-            <c:set var="urlParams" value="/${width}"/>
-        </c:if>
-    </c:otherwise>
-</c:choose>
+<c:set var="urlParams" value="/f_auto"/>
+<c:if test="${not empty height}">
+    <c:set var="urlParams" value="${urlParams},${height}"/>
+</c:if>
+<c:if test="${not empty width}">
+    <c:set var="urlParams" value="${urlParams},${width}"/>
+</c:if>
+<%--<c:choose>--%>
+<%--    <c:when test="${not empty height}">--%>
+<%--        <c:set var="urlParams" value="/${height}"/>--%>
+<%--        <c:if test="${not empty width}">--%>
+<%--            <c:set var="urlParams" value="${urlParams},${width}"/>--%>
+<%--        </c:if>--%>
+<%--    </c:when>--%>
+<%--    <c:otherwise>--%>
+<%--        <c:if test="${not empty width}">--%>
+<%--            <c:set var="urlParams" value="/${width}"/>--%>
+<%--        </c:if>--%>
+<%--    </c:otherwise>--%>
+<%--</c:choose>--%>
 
 <c:url value="${baseUrl}${urlParams}/${endUrl}"/>
 <%--<c:out value="${url}" />--%>
