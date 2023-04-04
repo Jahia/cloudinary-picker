@@ -1,5 +1,5 @@
 import React from 'react'
-import {FileImage} from '@jahia/moonstone';
+// import {FileImage} from '@jahia/moonstone';
 import {LoaderOverlay} from '../../DesignSystem/LoaderOverlay';
 import {useTranslation} from 'react-i18next';
 import {postData} from "../engine";
@@ -7,12 +7,14 @@ import {useQuery,useLazyQuery} from "@apollo/react-hooks";
 import {edpCoudinaryContentUUIDQuery} from "./edpCoudinaryContentUUID.gql-queries";
 import {edpCoudinaryContentPropsQuery} from "./edpCoudinaryContentProps.gql-queries";
 import {ReferenceCard} from "./Viewer";
+import svgCloudyLogo from "../../asset/logo.svg";
+import {toIconComponent} from "@jahia/moonstone";
 
 export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
     const [widget,setWidget] = React.useState(null);
     const {t} = useTranslation();
 
-    const [loadEdp4UUID, { loading: lazyLoading, data : lazyData }] = useLazyQuery(edpCoudinaryContentUUIDQuery);
+    const [loadEdp4UUID, selectedNodeUUID] = useLazyQuery(edpCoudinaryContentUUIDQuery);
 
     const config = window.contextJsParameters.config?.cloudinary;
 
@@ -52,15 +54,16 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
         }
     },[]);
 
-    const variables = {
-        uuid : value,
-        language: editorContext.lang,
-        skip: !value
-    };
-
-    const {loading, error, data} = useQuery(edpCoudinaryContentPropsQuery, {
-        variables
+    const cloudinaryNodeInfo = useQuery(edpCoudinaryContentPropsQuery, {
+        variables :{
+            uuid : value,
+            language: editorContext.lang,
+            skip: !value
+        }
     });
+
+    const error = selectedNodeUUID?.error || cloudinaryNodeInfo?.error;
+    const loading = selectedNodeUUID?.loading || cloudinaryNodeInfo?.loading;
 
     if (error) {
         const message = t(
@@ -71,16 +74,16 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
         console.warn(message);
     }
 
-    if (loading || lazyLoading) {
+    if (loading) {
         return <LoaderOverlay/>;
     }
 
-    if(lazyData){
-        onChange(lazyData.jcr?.result?.uuid)
+    if(selectedNodeUUID?.data?.jcr?.result?.uuid){
+        onChange(selectedNodeUUID.data.jcr.result.uuid)
     }
 
     let fieldData = null;
-    const cloudinaryJcrProps = data?.jcr?.result;
+    const cloudinaryJcrProps = cloudinaryNodeInfo?.data?.jcr?.result;
 
     if(cloudinaryJcrProps)
         fieldData = {
@@ -107,7 +110,7 @@ export const CloudinaryPickerCmp = ({field,value,editorContext,onChange}) => {
             <ReferenceCard
                 isReadOnly={field.readOnly}
                 emptyLabel="Add Cloudinary Asset"
-                emptyIcon={<FileImage/>}
+                emptyIcon={toIconComponent(svgCloudyLogo)}
                 labelledBy={`${field.name}-label`}
                 fieldData={fieldData}
                 onClick={handleShow}

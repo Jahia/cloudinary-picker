@@ -1,5 +1,6 @@
 import {registry} from '@jahia/ui-extender';
 import {CloudinaryPicker} from './CloudinaryPicker';
+import svgCloudyLogo from './asset/logo.svg';
 
 export default function () {
     //load cloudy js
@@ -17,7 +18,8 @@ export default function () {
             registry.add('damSelectorConfiguration','CloudinaryPicker',{
                 types: ['cloudymix:cloudyAsset'],
                 label:'Cloudinary',
-                module:'cloudinary-picker'
+                module:'cloudinary-picker',
+                icon: svgCloudyLogo
             });
         }
     })

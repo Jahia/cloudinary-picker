@@ -70,12 +70,13 @@ module.exports = (env, argv) => {
                             }
                         },
                         // Compiles Sass to CSS
-                        'sass-loader'
+                        // 'sass-loader'
                     ]
                 },
                 {
                     test: /\.(png|svg|gif)$/,
-                    use: ['file-loader']
+                    type: 'asset/resource',
+                    // use: ['file-loader']
                 },
                 {
                     test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
