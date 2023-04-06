@@ -1,0 +1,11 @@
+{
+  "label": {
+    "selectorConfig": {
+      "label": "Cloudinary",
+      "description": "Pick a content from Cloudinary digital asset manager"
+    },
+    "referenceCard": {
+      "emptyLabel": "Click to select a Cloudinary asset"
+    }
+  }
+}

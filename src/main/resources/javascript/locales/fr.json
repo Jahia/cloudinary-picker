@@ -1,0 +1,11 @@
+{
+  "label": {
+    "selectorConfig": {
+      "label": "Cloudinary",
+      "description": "Sélectionner un contenu à partir du gestionnaire de média Cloudinary"
+    },
+    "referenceCard": {
+      "emptyLabel": "Cliquer pour sélectionner un contenu Cloudinary"
+    }
+  }
+}

@@ -1,6 +1,10 @@
 import {registry} from '@jahia/ui-extender';
 import {CloudinaryPicker} from './CloudinaryPicker';
 import svgCloudyLogo from './asset/logo.svg';
+import i18next from 'i18next';
+
+
+i18next.loadNamespaces('cloudinary-picker');
 
 export default function () {
     //load cloudy js
@@ -17,9 +21,11 @@ export default function () {
             console.debug('%c CloudinaryPicker Editor Extensions  is activated', 'color: #3c8cba');
             registry.add('damSelectorConfiguration','CloudinaryPicker',{
                 types: ['cloudymix:cloudyAsset'],
-                label:'Cloudinary',
+                label:'cloudinary-picker:label.selectorConfig.label',
+                description: 'cloudinary-picker:label.selectorConfig.description',
                 module:'cloudinary-picker',
-                icon: svgCloudyLogo
+                icon: svgCloudyLogo,
+
             });
         }
     })

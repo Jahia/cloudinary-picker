@@ -118,13 +118,7 @@ const styles = theme => ({
     }
 });
 
-const getImgUrl = ({poster,baseUrl,endUrl}) => {
-    if(poster){
-        return `${baseUrl}/w_200/${poster}`
-    }else{
-        return `${baseUrl}/w_200/${endUrl}`
-    }
-}
+const getImgUrl = ({poster,baseUrl,endUrl}) => `${baseUrl}/w_200/${poster || endUrl}`;
 
 const ReferenceCardCmp = ({
     classes,
