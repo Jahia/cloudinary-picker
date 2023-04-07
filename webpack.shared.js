@@ -16,6 +16,7 @@ const sharedDeps = [
     'rxjs',
     'whatwg-fetch',
     'dayjs',
+    'formik',
 
     // JAHIA PACKAGES
     '@jahia/ui-extender',

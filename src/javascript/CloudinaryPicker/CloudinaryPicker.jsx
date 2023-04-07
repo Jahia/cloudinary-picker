@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
 import {LoaderOverlay} from '../DesignSystem/LoaderOverlay';
 import {useTranslation} from 'react-i18next';
 import {postData} from "./engine";
@@ -11,7 +12,7 @@ import {getButtonRenderer} from '../utils';
 
 const ButtonRenderer = getButtonRenderer({labelStyle: 'none', defaultButtonProps: {variant: 'ghost'}});
 
-export const CloudinaryPicker = ({field, value, editorContext, inputContext, onChange}) => {
+export const CloudinaryPicker = ({field, value, editorContext, inputContext, onChange, onBlur}) => {
     const [widget,setWidget] = React.useState(null);
     const {t} = useTranslation();
 
@@ -80,7 +81,8 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
     }
 
     if(selectedNodeUUID?.data?.jcr?.result?.uuid){
-        onChange(selectedNodeUUID.data.jcr.result.uuid)
+        onChange(selectedNodeUUID.data.jcr.result.uuid);
+        setTimeout(() => onBlur(), 0);
     }
 
     let fieldData = null;
@@ -101,9 +103,14 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
             aspectRatio: cloudinaryJcrProps.aspectRatio?.value,
         }
 
-
     const handleShow = () =>
         widget.show();
+
+    inputContext.actionContext={
+        handleShow,
+        onChange,
+        onBlur
+    }
 
     return (
         <>
@@ -119,7 +126,7 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
                 />
                 {inputContext.displayActions && value && (
                     <DisplayAction
-                        actionKey="content-editor/field/Picker"
+                        actionKey="content-editor/field/CloudinaryPicker"
                         value={value}
                         field={field}
                         inputContext={inputContext}
@@ -130,3 +137,12 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
         </>
     )
 }
+
+CloudinaryPicker.propTypes = {
+    editorContext: PropTypes.object.isRequired,
+    value: PropTypes.string,
+    field: PropTypes.object.isRequired,
+    inputContext: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onBlur: PropTypes.func.isRequired
+};
