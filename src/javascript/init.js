@@ -4,7 +4,6 @@ import svgCloudyLogo from './asset/logo.svg';
 import i18next from 'i18next';
 import {registerCloudinaryPickerActions} from "./CloudinaryPicker/components/actions/registerPickerActions";
 
-
 i18next.loadNamespaces('cloudinary-picker');
 
 export default function () {
@@ -20,7 +19,7 @@ export default function () {
         callback: () => {
             registry.add('selectorType','CloudinaryPicker', {cmp: CloudinaryPicker, supportMultiple:false});
             console.debug('%c CloudinaryPicker Editor Extensions  is activated', 'color: #3c8cba');
-            //NOTE should all the code below placed in the callback or outside ?
+
             registry.add('damSelectorConfiguration','CloudinaryPicker',{
                 types: ['cloudymix:cloudyAsset'],
                 label:'cloudinary-picker:label.selectorConfig.label',
@@ -29,6 +28,7 @@ export default function () {
                 icon: svgCloudyLogo,
 
             });
+
             registerCloudinaryPickerActions(registry);
         }
     })

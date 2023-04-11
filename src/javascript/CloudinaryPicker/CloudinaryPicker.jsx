@@ -32,7 +32,7 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
                     multiple: false //cannot select more than one asset
                 }, {
                     insertHandler: (data) => {
-                        console.debug("cloudinary selected content : ",data);
+                        // console.debug("cloudinary selected content : ",data);
                         //#1 fetch asset_id
                         postData(
                             "/resources/search",
@@ -113,7 +113,7 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
     }
 
     return (
-        <>
+        <div className="flexFluid flexRow_nowrap alignCenter">
             {widget &&
             <>
                 <ReferenceCard
@@ -134,7 +134,7 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
                     />
                 )}
             </>}
-        </>
+        </div>
     )
 }
 
