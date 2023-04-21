@@ -43,8 +43,7 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
                             //#2 create record and get uuid
                             loadEdp4UUID({
                                 variables: {
-                                    edpContentPath,
-                                    skip: !asset_id
+                                    edpContentPath
                                 }
                             })
                         });
@@ -60,8 +59,8 @@ export const CloudinaryPicker = ({field, value, editorContext, inputContext, onC
         variables :{
             uuid : value,
             language: editorContext.lang,
-            skip: !value
-        }
+        },
+        skip: !value
     });
 
     const error = selectedNodeUUID?.error || cloudinaryNodeInfo?.error;
