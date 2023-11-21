@@ -12,16 +12,7 @@
 <c:set var="width" value="${currentNode.properties['cloudy:width']}"/>
 <c:set var="height" value="${currentNode.properties['cloudy:height']}"/>
 
-<%--<c:if test="${renderContext.editMode}" >--%>
-<%--    <div>--%>
-<%--    <span style="color:#ccc;">Edit cloudinary media</span>--%>
-<%--</c:if>--%>
-
 <template:module node="${cloudyNode}" editable="false" view="${referenceView}">
     <template:param name="width" value="${width}"/>
     <template:param name="height" value="${height}"/>
 </template:module>
-
-<%--<c:if test="${renderContext.editMode}" >--%>
-<%--    </div>--%>
-<%--</c:if>--%>
