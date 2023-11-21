@@ -4,19 +4,6 @@
 <cloudynt = 'http://modules.se.jahia.org/cloudinary/nt/1.0'>
 <cloudy = 'http://modules.se.jahia.org/cloudinary/1.0'>
 
-// >>Deprecated use Dam Selector instead
-[cloudymix:mediaPickerCd] > jmix:dynamicFieldset mixin
- extends = cloudymix:mediaReference
- - cloudy:mediaNode (weakreference) internationalized < cloudymix:cloudyAsset
-
-[cloudymix:mediaPickerJc] > jmix:dynamicFieldset mixin
- extends = cloudymix:mediaReference
- - cloudy:mediaNode (weakreference) internationalized < jnt:file
-
-[cloudymix:mediaReference] mixin
- - cloudy:mediaPicker (string, choicelist) indexed=no
-//<<
-
 [cloudymix:cloudyAsset] > jmix:structuredContent, jmix:tagged, jmix:keywords, mix:title mixin
  - cloudy:assetId (string) fulltextsearchable=no
  - cloudy:publicId (string) fulltextsearchable=no
@@ -59,5 +46,3 @@
 
 [cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
  - j:node (weakreference) < 'cloudymix:cloudyAsset'
-
-//[cloudynt:testMixin] > jnt:content, cloudymix:mediaReference, jmix:multimediaContent
