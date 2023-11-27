@@ -94,7 +94,8 @@ module.exports = (env, argv) => {
                     './init': './src/javascript/init'
                 },
                 remotes: {
-                    '@jahia/app-shell': 'appShellRemote'
+                    '@jahia/app-shell': 'appShellRemote',
+                    '@jahia/content-editor':'appShell.remotes.contentEditor'
                 },
                 shared
             }),

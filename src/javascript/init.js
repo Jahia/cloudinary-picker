@@ -1,5 +1,6 @@
 import {registry} from '@jahia/ui-extender';
 import {CloudinaryPicker} from './CloudinaryPicker';
+import {CloudinaryPickerDialog, useCloudinaryPickerInputData} from './CloudinaryPickerDialog';
 import svgCloudyLogo from './asset/logo.svg';
 import i18next from 'i18next';
 import {registerCloudinaryPickerActions} from "./CloudinaryPicker/components/actions/registerPickerActions";
@@ -17,16 +18,26 @@ export default function () {
     registry.add('callback', 'cloudinaryPickerSelectorType',{
         targets:['jahiaApp-init:20'],
         callback: () => {
-            registry.add('selectorType','CloudinaryPicker', {cmp: CloudinaryPicker, supportMultiple:false});
+            // registry.add('selectorType','CloudinaryPicker', {cmp: CloudinaryPicker, supportMultiple:false});
             console.debug('%c CloudinaryPicker Editor Extensions  is activated', 'color: #3c8cba');
 
-            registry.add('damSelectorConfiguration','CloudinaryPicker',{
+            // registry.add('pickerDialog','CloudinaryPickerDialog', {cmp: CloudinaryPickerDialog});
+
+            registry.add('pickerDialogSelectorConfiguration','cloudinary',{
                 types: ['cloudymix:cloudyAsset'],
                 label:'cloudinary-picker:label.selectorConfig.label',
                 description: 'cloudinary-picker:label.selectorConfig.description',
                 module:'cloudinary-picker',
                 icon: svgCloudyLogo,
+                pickerDialog: CloudinaryPickerDialog
+            });
 
+            registry.add('pickerConfiguration','cloudinary',{
+                pickerInput: {
+                    emptyLabel: 'cloudinary-picker:label.referenceCard.emptyLabel',
+                    emptyIcon: svgCloudyLogo,
+                    usePickerInputData: useCloudinaryPickerInputData
+                },
             });
 
             registerCloudinaryPickerActions(registry);
