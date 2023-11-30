@@ -1,5 +1,5 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import {useTranslation} from 'react-i18next';
 import {postData} from "../CloudinaryPicker/engine";
 import {useLazyQuery} from "@apollo/react-hooks";
@@ -55,8 +55,8 @@ export const CloudinaryPickerDialog = ({onItemSelection}) => {
         }
     },[]);
 
-    const error = selectedNodeUUID?.error || cloudinaryNodeInfo?.error;
-    const loading = selectedNodeUUID?.loading || cloudinaryNodeInfo?.loading;
+    const error = selectedNodeUUID?.error;
+    const loading = selectedNodeUUID?.loading;
 
     if (error) {
         const message = t(
