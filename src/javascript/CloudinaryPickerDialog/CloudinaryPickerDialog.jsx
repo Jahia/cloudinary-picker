@@ -11,7 +11,7 @@ import {LoaderOverlay} from "../DesignSystem/LoaderOverlay";
 
 // const ButtonRenderer = getButtonRenderer({labelStyle: 'none', defaultButtonProps: {variant: 'ghost'}});
 
-export const CloudinaryPickerDialog = ({onItemSelection}) => {
+export const CloudinaryPickerDialog = ({className, onItemSelection}) => {
     const [widget,setWidget] = React.useState(null);
     const {t} = useTranslation();
     const [loadEdp4UUID, selectedNodeUUID] = useLazyQuery(edpCoudinaryContentUUIDQuery);
@@ -72,10 +72,10 @@ export const CloudinaryPickerDialog = ({onItemSelection}) => {
     }
 
     if(selectedNodeUUID?.data?.jcr?.result?.uuid){
-        onItemSelection(selectedNodeUUID.data.jcr.result.uuid);
+        onItemSelection([{uuid:selectedNodeUUID.data.jcr.result.uuid}]);
     }
 
-    return (<div id="CloudinaryWebHookElement"></div>);
+    return (<div id="CloudinaryWebHookElement" className={className}></div>);
 }
 CloudinaryPickerDialog.propTypes = {
     onItemSelection: PropTypes.func.isRequired
