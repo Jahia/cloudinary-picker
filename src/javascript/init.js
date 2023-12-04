@@ -35,6 +35,7 @@ export default function () {
             registry.add('pickerConfiguration','cloudinary',{
                 module:'cloudinary-picker',
                 selectableTypes:['cloudymix:cloudyAsset'],
+                keyUrlPath:'cloudinary',
                 pickerInput: {
                     emptyLabel: 'cloudinary-picker:label.referenceCard.emptyLabel',
                     emptyIcon: svgCloudyLogo,
