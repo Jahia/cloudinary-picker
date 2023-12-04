@@ -20,7 +20,8 @@ export const useCloudinaryPickerInputData = uuids => {
     const getImgUrl = ({poster,baseUrl,endUrl}) => `${baseUrl}/w_200/${poster || endUrl}`;
 
     const fieldData = data.jcr.result.map(cloudyContentData => {
-        const sizeInfo = (cloudyContentData.height && cloudyContentData.width) ? ` - ${parseInt(cloudyContentData.height.value, 10)}x${parseInt(cloudyContentData.width.value, 10)}px` : '';
+        const sizeInfo = (cloudyContentData.height && cloudyContentData.width) ? ` - ${parseInt(cloudyContentData.width.value, 10)}x${parseInt(cloudyContentData.height.value, 10)}px` : '';
+        const mime = `${cloudyContentData.resourceType?.value}/${cloudyContentData.format?.value}`;
         return {
             uuid: cloudyContentData.uuid,
             url: getImgUrl({
@@ -30,7 +31,7 @@ export const useCloudinaryPickerInputData = uuids => {
             }),
             name: cloudyContentData.displayName,
             path: cloudyContentData.path,
-            info: `${sizeInfo} (r:${fieldData.aspectRatio?.value} )`
+            info: `${mime}${sizeInfo} (r:${cloudyContentData.aspectRatio?.value} )`
         };
     });
 
