@@ -33,12 +33,13 @@ export const CloudinaryPickerDialog = ({className, onItemSelection}) => {
                 }, {
                     insertHandler: (data) => {
                         // console.debug("cloudinary selected content : ",data);
-                        //#1 fetch asset_id
-                        postData(
-                            "/resources/search",
-                            {expression: `public_id=${data.assets[0].public_id} && resource_type=${data.assets[0].resource_type}`}
-                        ).then( apiData => {
-                            const asset_id = apiData?.resources[0]?.asset_id;
+                        //#1 fetch asset_id now id is there
+                        // postData(
+                        //     "/resources/search",
+                        //     {expression: `public_id=${data.assets[0].public_id} && resource_type=${data.assets[0].resource_type}`}
+                        // ).then( apiData => {
+                        //     const asset_id = apiData?.resources[0]?.asset_id;
+                            const asset_id = data.assets[0].id;
                             const edpContentPath = config.mountPoint + "/" + asset_id
                             //#2 create record and get uuid
                             loadEdp4UUID({
@@ -46,7 +47,7 @@ export const CloudinaryPickerDialog = ({className, onItemSelection}) => {
                                     edpContentPath
                                 }
                             })
-                        });
+                        // });
                     }
                 } );
             }else{
