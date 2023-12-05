@@ -1,18 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {useTranslation} from 'react-i18next';
-import {postData} from "../CloudinaryPicker/engine";
 import {useLazyQuery} from "@apollo/react-hooks";
 import {edpCoudinaryContentUUIDQuery} from "./edpCoudinaryContentUUID.gql-queries";
 import {LoaderOverlay} from "../DesignSystem/LoaderOverlay";
-// import svgCloudyLogo from "../asset/logo.svg";
-// import {Button, toIconComponent} from "@jahia/moonstone";
-// import {getButtonRenderer} from '../utils';
 
-// const ButtonRenderer = getButtonRenderer({labelStyle: 'none', defaultButtonProps: {variant: 'ghost'}});
-
-export const CloudinaryPickerDialog = ({className, onItemSelection}) => {
-    const [widget,setWidget] = React.useState(null);
+export const CloudinaryPickerDialog = ({className, onItemSelection,isCkEditor, isMultiple}) => {
     const {t} = useTranslation();
     const [loadEdp4UUID, selectedNodeUUID] = useLazyQuery(edpCoudinaryContentUUIDQuery);
 
@@ -28,26 +21,27 @@ export const CloudinaryPickerDialog = ({className, onItemSelection}) => {
                     cloud_name: config.cloudName,
                     api_key: config.apiKey,
                     inline_container:"#CloudinaryWebHookElement",
-                    multiple: false, //cannot select more than one asset
+                    multiple: isMultiple, //cannot select more than one asset
                     remove_header:true
                 }, {
                     insertHandler: (data) => {
-                        // console.debug("cloudinary selected content : ",data);
-                        //#1 fetch asset_id now id is there
-                        // postData(
-                        //     "/resources/search",
-                        //     {expression: `public_id=${data.assets[0].public_id} && resource_type=${data.assets[0].resource_type}`}
-                        // ).then( apiData => {
-                        //     const asset_id = apiData?.resources[0]?.asset_id;
+                        //Get url or create record and get uuid
+                        if(isCkEditor){
+                            const urls = data.assets.map(({url,derived}) => {
+                                if(derived && derived.length > 0)
+                                    return derived[0].url;
+                                return url;
+                            });
+                            onItemSelection(urls);
+                        }else{
                             const asset_id = data.assets[0].id;
                             const edpContentPath = config.mountPoint + "/" + asset_id
-                            //#2 create record and get uuid
                             loadEdp4UUID({
                                 variables: {
                                     edpContentPath
                                 }
                             })
-                        // });
+                        }
                     }
                 } );
             }else{
@@ -79,7 +73,10 @@ export const CloudinaryPickerDialog = ({className, onItemSelection}) => {
     return (<div id="CloudinaryWebHookElement" className={className}></div>);
 }
 CloudinaryPickerDialog.propTypes = {
-    onItemSelection: PropTypes.func.isRequired
+    className: PropTypes.object,
+    onItemSelection: PropTypes.func.isRequired,
+    isCkEditor: PropTypes.bool,
+    isMultiple: PropTypes.bool
 }
 // CloudinaryPickerDialog.propTypes = {
 //     editorContext: PropTypes.object.isRequired,
