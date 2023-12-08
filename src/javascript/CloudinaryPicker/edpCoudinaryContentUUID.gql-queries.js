@@ -2,9 +2,9 @@ import {gql} from 'graphql-tag';
 import {PredefinedFragments} from '@jahia/data-helper';
 
 export const edpCoudinaryContentUUIDQuery = gql`
-    query edpCoudinaryContentUUIDQuery($edpContentPath: String!) {
+    query edpCoudinaryContentUUIDQuery($edpContentPaths: [String!]!) {
         jcr{
-            result: nodeByPath(path: $edpContentPath) {
+            result: nodesByPath(paths: $edpContentPaths) {
                 ...NodeCacheRequiredFields
             }
         }

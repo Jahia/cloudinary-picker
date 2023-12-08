@@ -16,8 +16,10 @@ export default function () {
     registry.add('callback', 'cloudinaryPickerSelectorType',{
         targets:['jahiaApp-init:20'],
         callback: () => {
-            registry.add('pickerConfiguration','cloudinary',{
-                module:'cloudinary-picker',
+            const config = window.contextJsParameters.config?.cloudinary;
+            registry.add('externalPickerConfiguration','cloudinary',{
+                requireModuleInstalledOnSite:'cloudinary-picker',
+                pickerConfigs: config.applyOnPickers ? config.applyOnPickers.split(",").map(item => item.trim()) : ['image', 'file'],
                 selectableTypes:['cloudymix:cloudyAsset'],
                 keyUrlPath:'cloudinary',
                 pickerInput: {

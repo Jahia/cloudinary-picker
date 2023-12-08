@@ -1,15 +1,23 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {useTranslation} from 'react-i18next';
-import {useLazyQuery} from "@apollo/react-hooks";
+import {useQuery} from "@apollo/react-hooks";
 import {edpCoudinaryContentUUIDQuery} from "./edpCoudinaryContentUUID.gql-queries";
 import {LoaderOverlay} from "../DesignSystem/LoaderOverlay";
 
-export const CloudinaryPickerDialog = ({className, onItemSelection,isCkEditor, isMultiple}) => {
+export const CloudinaryPickerDialog = ({className, onItemSelection,urlPicker, isMultiple}) => {
     const {t} = useTranslation();
-    const [loadEdp4UUID, selectedNodeUUID] = useLazyQuery(edpCoudinaryContentUUIDQuery);
+    const [cloudinaryData, setCloudinaryData] = useState();
 
     const config = window.contextJsParameters.config?.cloudinary;
+
+    const {data, loading, error} = useQuery(edpCoudinaryContentUUIDQuery, {
+        variables: {
+            edpContentPaths: cloudinaryData && cloudinaryData.assets.map(asset => config.mountPoint + "/" + asset.id)
+        },
+        skip: !cloudinaryData,
+    });
+
 
     React.useEffect( () => {
         if(!config?.cloudName || !config?.apiKey){
@@ -25,23 +33,7 @@ export const CloudinaryPickerDialog = ({className, onItemSelection,isCkEditor, i
                     remove_header:true
                 }, {
                     insertHandler: (data) => {
-                        //Get url or create record and get uuid
-                        if(isCkEditor){
-                            const urls = data.assets.map(({url,derived}) => {
-                                if(derived && derived.length > 0)
-                                    return derived[0].url;
-                                return url;
-                            });
-                            onItemSelection(urls);
-                        }else{
-                            const asset_id = data.assets[0].id;
-                            const edpContentPath = config.mountPoint + "/" + asset_id
-                            loadEdp4UUID({
-                                variables: {
-                                    edpContentPath
-                                }
-                            })
-                        }
+                        setCloudinaryData(data);
                     }
                 } );
             }else{
@@ -50,8 +42,17 @@ export const CloudinaryPickerDialog = ({className, onItemSelection,isCkEditor, i
         }
     },[]);
 
-    const error = selectedNodeUUID?.error;
-    const loading = selectedNodeUUID?.loading;
+    useEffect(() => {
+        if(!error && !loading && data?.jcr?.result){
+            const urls = cloudinaryData.assets.map(({url,derived}) => {
+                if(derived && derived.length > 0)
+                    return derived[0].url;
+                return url;
+            });
+
+            onItemSelection(data?.jcr?.result.map((m,i) => ({...m, url: urls[i]})));
+        }
+    }, [cloudinaryData, data, error, loading]);
 
     if (error) {
         const message = t(
@@ -66,16 +67,12 @@ export const CloudinaryPickerDialog = ({className, onItemSelection,isCkEditor, i
         return <LoaderOverlay/>;
     }
 
-    if(selectedNodeUUID?.data?.jcr?.result?.uuid){
-        onItemSelection([{uuid:selectedNodeUUID.data.jcr.result.uuid}]);
-    }
-
     return (<div id="CloudinaryWebHookElement" className={className}></div>);
 }
 CloudinaryPickerDialog.propTypes = {
-    className: PropTypes.object,
+    className: PropTypes.string,
     onItemSelection: PropTypes.func.isRequired,
-    isCkEditor: PropTypes.bool,
+    urlPicker: PropTypes.bool,
     isMultiple: PropTypes.bool
 }
 // CloudinaryPickerDialog.propTypes = {

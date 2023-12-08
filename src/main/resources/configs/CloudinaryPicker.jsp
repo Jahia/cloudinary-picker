@@ -29,7 +29,8 @@
             <c:if test="${! empty cloudinaryConfig['cloudinary_provider.cloudName']}">
                 cloudName:"${cloudinaryConfig['cloudinary_provider.cloudName']}",
             </c:if>
-            mountPoint:"/sites/systemsite/contents/dam-cloudinary"
+            mountPoint:"/sites/systemsite/contents/dam-cloudinary",
+            applyOnPickers:"${cloudinaryConfig['cloudinary_provider.applyOnPickers']}",
         }
         console.debug("%c Cloudinary config is added to contextJsParameters.config", 'color: #3c8cba');
     </c:when>

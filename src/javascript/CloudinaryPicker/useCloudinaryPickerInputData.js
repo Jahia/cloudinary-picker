@@ -1,6 +1,6 @@
 import {useQuery} from '@apollo/react-hooks';
 import {edpCoudinaryContentPropsQuery} from "./edpCoudinaryContentProps.gql-queries";
-import {useContentEditorContext} from '@jahia/content-editor'
+import {useContentEditorContext} from '@jahia/jcontent'
 export const useCloudinaryPickerInputData = uuids => {
     const {lang} = useContentEditorContext();
 
