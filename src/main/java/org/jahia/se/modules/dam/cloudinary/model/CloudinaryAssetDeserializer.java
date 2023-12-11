@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.apache.jackrabbit.value.BinaryImpl;
+import org.joda.time.format.ISODateTimeFormat;
 
 import javax.jcr.RepositoryException;
 import java.io.IOException;
@@ -86,6 +87,7 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
         cloudinaryAsset.addProperty("cloudy:type", cloudinaryNode.get("type").textValue());
         cloudinaryAsset.addProperty("cloudy:createdAt", cloudinaryNode.get("created_at").textValue());
         cloudinaryAsset.addProperty("cloudy:uploadedAt", cloudinaryNode.get("uploaded_at").textValue());
+        cloudinaryAsset.addProperty("jcr:lastModified", ISODateTimeFormat.dateTimeNoMillis().parseDateTime(cloudinaryNode.get("uploaded_at").textValue()).toString());
         cloudinaryAsset.addProperty("cloudy:bytes", cloudinaryNode.get("bytes").longValue());
         cloudinaryAsset.addProperty("j:width", cloudinaryNode.get("width").longValue());
         cloudinaryAsset.addProperty("j:height", cloudinaryNode.get("height").longValue());
