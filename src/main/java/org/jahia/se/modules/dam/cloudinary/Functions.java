@@ -29,15 +29,15 @@ public final class Functions {
         BundleContext bundleContext = FrameworkUtil.getBundle(Functions.class).getBundleContext();
         ServiceReference<ConfigurationAdmin> cmRef = bundleContext.getServiceReference(ConfigurationAdmin.class);
         ConfigurationAdmin configAdmin = bundleContext.getService(cmRef);
-        try{
+        try {
             Configuration config = configAdmin.getConfiguration("org.jahia.se.modules.cloudinary_picker_credentials");
             Dictionary<String, ?> dict = config.getProperties();
             List<String> keys = Collections.list(dict.keys());
             properties = keys.stream()
                     .collect(Collectors.toMap(Function.identity(), dict::get));
 
-        }catch (IOException e){
-            logger.error("Error reading cloudinary config file e: "+e);
+        } catch (IOException e) {
+            logger.error("Error reading cloudinary config file e: " + e);
         }
         return properties;
     }

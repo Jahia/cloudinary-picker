@@ -71,11 +71,11 @@ public class CloudinaryCacheManager {
         }
     }
 
-    public CloudinaryAsset getCloudinaryAsset(String cacheKey){
+    public CloudinaryAsset getCloudinaryAsset(String cacheKey) {
         return (CloudinaryAsset) CacheHelper.getObjectValue(cache, cacheKey);
-    };
+    }
 
-    public void cacheCloudinaryAsset (CloudinaryAsset cloudinaryAsset){
-        cache.put(new Element(cloudinaryAsset.getId(),new ModuleClassLoaderAwareCacheEntry(cloudinaryAsset, CACHE_NAME)));
+    public void cacheCloudinaryAsset(CloudinaryAsset cloudinaryAsset) {
+        cache.put(new Element(cloudinaryAsset.getId(), new ModuleClassLoaderAwareCacheEntry(cloudinaryAsset, CACHE_NAME)));
     }
 }

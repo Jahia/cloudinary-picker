@@ -1,4 +1,5 @@
 package org.jahia.se.modules.dam.cloudinary.edp;
+
 import org.jahia.exceptions.JahiaInitializationException;
 import org.jahia.modules.external.ExternalContentStoreProvider;
 import org.jahia.modules.external.ExternalProviderInitializerService;
@@ -21,12 +22,8 @@ import org.slf4j.LoggerFactory;
  * Factory for the EDP cloudinary mount point
  */
 @Component(service = {CloudinaryMountPointService.class}, immediate = true)
-public class CloudinaryMountPointServiceImpl implements  CloudinaryMountPointService{
+public class CloudinaryMountPointServiceImpl implements CloudinaryMountPointService {
     private static final Logger logger = LoggerFactory.getLogger(CloudinaryDataSource.class);
-
-//    public static final String WIDEN_NODETYPE = "kibanant:dashboard";
-//    private static final List<String> EXTENDABLE_TYPES = Arrays.asList(DASHBOARD_NODETYPE);
-//    private static final List<String> OVERRIDABLE_ITEMS = Collections.singletonList("*.*");
 
     private ExternalContentStoreProvider cloudinaryProvider;
 
@@ -90,8 +87,6 @@ public class CloudinaryMountPointServiceImpl implements  CloudinaryMountPointSer
         cloudinaryProvider.setExternalProviderInitializerService(externalProviderInitializerService);
 
         cloudinaryProvider.setDataSource(new CloudinaryDataSource(cloudinaryProviderConfig, cloudinaryCacheManager));
-//        cloudinaryProvider.setExtendableTypes(EXTENDABLE_TYPES);
-//        cloudinaryProvider.setOverridableItems(OVERRIDABLE_ITEMS);
         cloudinaryProvider.setDynamicallyMounted(false);
         cloudinaryProvider.setMountPoint("/sites/systemsite/contents/dam-cloudinary");
         cloudinaryProvider.setKey("cloudinary");

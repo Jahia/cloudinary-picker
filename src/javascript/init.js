@@ -1,5 +1,5 @@
 import {registry} from '@jahia/ui-extender';
-import {CloudinaryPickerDialog, useCloudinaryPickerInputData} from './CloudinaryPicker';
+import {CloudinaryPickerDialog} from './CloudinaryPicker';
 import svgCloudyLogo from './asset/logo.svg';
 import i18next from 'i18next';
 
@@ -25,7 +25,6 @@ export default function () {
                 pickerInput: {
                     emptyLabel: 'cloudinary-picker:label.referenceCard.emptyLabel',
                     emptyIcon: svgCloudyLogo,
-                    usePickerInputData: useCloudinaryPickerInputData
                 },
                 pickerDialog:{
                     cmp:CloudinaryPickerDialog,
