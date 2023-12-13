@@ -5,7 +5,7 @@ import {useQuery} from "@apollo/react-hooks";
 import {edpCoudinaryContentUUIDQuery} from "./edpCoudinaryContentUUID.gql-queries";
 import {LoaderOverlay} from "../DesignSystem/LoaderOverlay";
 
-export const CloudinaryPickerDialog = ({className, onItemSelection,urlPicker, isMultiple}) => {
+export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple}) => {
     const {t} = useTranslation();
     const [cloudinaryData, setCloudinaryData] = useState();
 
@@ -72,7 +72,6 @@ export const CloudinaryPickerDialog = ({className, onItemSelection,urlPicker, is
 CloudinaryPickerDialog.propTypes = {
     className: PropTypes.string,
     onItemSelection: PropTypes.func.isRequired,
-    urlPicker: PropTypes.bool,
     isMultiple: PropTypes.bool
 }
 // CloudinaryPickerDialog.propTypes = {

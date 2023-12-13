@@ -1,9 +1,0 @@
-{
-  "name": "cloudymix:mediaPickerCd",
-  "fields": [
-    {
-      "name": "cloudy:mediaNode",
-      "selectorType": "CloudinaryPicker"
-    }
-  ]
-}
