@@ -35,11 +35,16 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
 
     public String getUrl(List<String> params) {
         List<String> cloudyParams = new ArrayList<>();
+        cloudyParams.add("f_auto");
         for (String param : params) {
             if (param.startsWith("width:")) {
-                cloudyParams.add("w_" + StringUtils.substringAfter(param, "width:"));
+                String width = StringUtils.substringAfter(param, "width:");
+                if(!width.trim().isEmpty())
+                cloudyParams.add("w_" + width);
             } else if (param.startsWith("height:")) {
-                cloudyParams.add("h_" + StringUtils.substringAfter(param, "width:"));
+                String height = StringUtils.substringAfter(param, "height:");
+                if(!height.trim().isEmpty())
+                    cloudyParams.add("h_" + height);
             }
         }
         try {
