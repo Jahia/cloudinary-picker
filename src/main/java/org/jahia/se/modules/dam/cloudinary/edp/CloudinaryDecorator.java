@@ -34,6 +34,7 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
     }
 
     public String getUrl(List<String> params) {
+        //TODO default width ?
         List<String> cloudyParams = new ArrayList<>();
         cloudyParams.add("f_auto");
         for (String param : params) {
