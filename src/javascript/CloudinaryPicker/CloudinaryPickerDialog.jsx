@@ -29,7 +29,7 @@ export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple})
                 cloud_name: config.cloudName,
                 api_key: config.apiKey,
                 inline_container: '#CloudinaryWebHookElement',
-                multiple: isMultiple, // Cannot select more than one asset
+                multiple: Boolean(isMultiple), // Cannot select more than one asset
                 remove_header: true
             }, {
                 insertHandler: data => {

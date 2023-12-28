@@ -13,17 +13,15 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.jahia.se.modules.dam.cloudinary.ContentTypesConstants.*;
+
 public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset> {
 
     private static final String RESOURCE_TYPE_IMAGE = "image";
     private static final String RESOURCE_TYPE_VIDEO = "video";
-
     private static final String FORMAT_PDF = "pdf";
 
-    private static final String CONTENT_TYPE_IMAGE = "cloudynt:image";
-    private static final String CONTENT_TYPE_VIDEO = "cloudynt:video";
-    private static final String CONTENT_TYPE_PDF = "cloudynt:pdf";
-    private static final String CONTENT_TYPE_DOC = "cloudynt:document";
+
 
     private class Urls {
         private String baseUrl;

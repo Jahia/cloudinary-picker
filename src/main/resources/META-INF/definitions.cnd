@@ -36,13 +36,13 @@
  - cloudy:poster (string) fulltextsearchable=no
 
 
-[cloudymix:imageMediaSettings] mixin
- extends = cloudynt:cloudyReference
- itemtype = content
- - cloudy:width (string)
- - cloudy:height (string)
+//[cloudymix:imageMediaSettings] mixin
+// extends = cloudynt:cloudyReference
+// itemtype = content
+// - cloudy:width (string)
+// - cloudy:height (string)
 // - cloudy:defaultImageSize (long)
 // - cloudy:imageSizes (long) multiple
 
-[cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
- - j:node (weakreference,picker[type='file']) < 'cloudymix:cloudyAsset'
+//[cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
+// - j:node (weakreference,picker[type='file']) < 'cloudymix:cloudyAsset'
