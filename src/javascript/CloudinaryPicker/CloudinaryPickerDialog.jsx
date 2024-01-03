@@ -43,15 +43,12 @@ export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple})
 
     useEffect(() => {
         if (!error && !loading && data?.jcr?.result) {
-            const urls = cloudinaryData.assets.map(({url, derived}) => {
-                if (derived && derived.length > 0) {
-                    return derived[0].url;
-                }
+            const exts = cloudinaryData.assets.map(({url, derived, public_id: name}) => ({
+                name,
+                url: derived && derived.length > 0 ? derived[0].url : url
+            }));
 
-                return url;
-            });
-
-            onItemSelection(data?.jcr?.result.map((m, i) => ({...m, url: urls[i]})));
+            onItemSelection(data?.jcr?.result.map((m, i) => ({...m, ...exts[i]})));
         }
     }, [cloudinaryData, data, error, loading, onItemSelection]);
 
@@ -76,11 +73,3 @@ CloudinaryPickerDialog.propTypes = {
     onItemSelection: PropTypes.func.isRequired,
     isMultiple: PropTypes.bool
 };
-// CloudinaryPickerDialog.propTypes = {
-//     editorContext: PropTypes.object.isRequired,
-//     value: PropTypes.string,
-//     field: PropTypes.object.isRequired,
-//     inputContext: PropTypes.object.isRequired,
-//     onChange: PropTypes.func.isRequired,
-//     onBlur: PropTypes.func.isRequired
-// };
