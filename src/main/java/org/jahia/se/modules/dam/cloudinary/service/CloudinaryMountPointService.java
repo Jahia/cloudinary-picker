@@ -8,6 +8,7 @@ import org.jahia.exceptions.JahiaInitializationException;
 public interface CloudinaryMountPointService {
     /**
      * Start and mount the cloudinary EDP implementation
+     *
      * @param cloudinaryProviderConfig the config
      * @throws JahiaInitializationException
      */

@@ -16,20 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
- * This proxy is used to call the cloudinary admin API from the piker
+ * This proxy is used to call the cloudinary admin API from the picker
  * in order to get the asset_id of the selected element
  */
-@Component(service = AbstractServletFilter.class, configurationPid="org.jahia.se.modules.cloudinary_picker_credentials")
+@Component(service = AbstractServletFilter.class, configurationPid = "org.jahia.se.modules.cloudinary_picker_credentials")
 public class CloudinaryProxyServlet extends ServletWrappingFilter {
 
     private String authorization;
@@ -37,11 +30,11 @@ public class CloudinaryProxyServlet extends ServletWrappingFilter {
     @Activate
     public void onActivate(Map<String, String> params) {
         authorization = Base64
-            .getEncoder()
-            .encodeToString(
-                    (params.get("cloudinary_provider.apiKey") + ":" + params.get("cloudinary_provider.apiSecret"))
-                    .getBytes(StandardCharsets.UTF_8)
-            );
+                .getEncoder()
+                .encodeToString(
+                        (params.get("cloudinary_provider.apiKey") + ":" + params.get("cloudinary_provider.apiSecret"))
+                                .getBytes(StandardCharsets.UTF_8)
+                );
 
         setServletName("cloudinary");
         setServletClass(URITemplateProxyServlet.class);

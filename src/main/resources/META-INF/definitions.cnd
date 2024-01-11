@@ -4,7 +4,7 @@
 <cloudynt = 'http://modules.se.jahia.org/cloudinary/nt/1.0'>
 <cloudy = 'http://modules.se.jahia.org/cloudinary/1.0'>
 
-[cloudymix:cloudyAsset] > jmix:structuredContent, jmix:tagged, jmix:keywords, mix:title mixin
+[cloudymix:cloudyAsset] > jmix:tagged, jmix:keywords, mix:title mixin
  - cloudy:assetId (string) fulltextsearchable=no
  - cloudy:publicId (string) fulltextsearchable=no
  - cloudy:folder (string) fulltextsearchable=no
@@ -25,24 +25,24 @@
  - cloudy:accessMode (string) fulltextsearchable=no
  - cloudy:accessControl (string) multiple fulltextsearchable=no
 
-[cloudynt:image] > jnt:content, cloudymix:cloudyAsset
-[cloudynt:document] > jnt:content, cloudymix:cloudyAsset
+[cloudynt:image] > jnt:file, jmix:image, cloudymix:cloudyAsset
+[cloudynt:document] > jnt:file, cloudymix:cloudyAsset
 
-[cloudynt:pdf] > jnt:content, cloudymix:cloudyAsset
+[cloudynt:pdf] > jnt:file, cloudymix:cloudyAsset
  - cloudy:poster (string) fulltextsearchable=no
 
-[cloudynt:video] > jnt:content, cloudymix:cloudyAsset
+[cloudynt:video] > jnt:file, cloudymix:cloudyAsset
  - cloudy:duration (double)
  - cloudy:poster (string) fulltextsearchable=no
 
 
-[cloudymix:imageMediaSettings] mixin
- extends = cloudynt:cloudyReference
- itemtype = content
- - cloudy:width (string)
- - cloudy:height (string)
+//[cloudymix:imageMediaSettings] mixin
+// extends = cloudynt:cloudyReference
+// itemtype = content
+// - cloudy:width (string)
+// - cloudy:height (string)
 // - cloudy:defaultImageSize (long)
 // - cloudy:imageSizes (long) multiple
 
-[cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
- - j:node (weakreference) < 'cloudymix:cloudyAsset'
+//[cloudynt:cloudyReference] > jnt:content, jmix:nodeReference, jmix:multimediaContent
+// - j:node (weakreference,picker[type='file']) < 'cloudymix:cloudyAsset'

@@ -1,1 +1,1 @@
-export * from './CloudinaryPicker'
+export * from './CloudinaryPickerDialog';

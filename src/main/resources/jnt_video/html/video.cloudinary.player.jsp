@@ -5,8 +5,10 @@
 <%@ taglib prefix="utility" uri="http://www.jahia.org/tags/utilityLib" %>
 <%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions"%>
 
+
 <c:set var="cloudName" value="${functions:getConfigValue('org.jahia.se.modules.cloudinary_picker_credentials','cloudinary_provider.cloudName')}"/>
-<c:set var="publicId" value="${currentNode.properties['cloudy:publicId'].string}"/>
+<c:set var="cloudyNode" value="${currentNode.properties['source'].node}"/>
+<c:set var="publicId" value="${cloudyNode.properties['cloudy:publicId'].string}"/>
 
 <link href="https://unpkg.com/cloudinary-video-player@latest/dist/cld-video-player.min.css" rel="stylesheet">
 <script src="https://unpkg.com/cloudinary-video-player@latest/dist/cld-video-player.min.js" type="text/javascript"></script>

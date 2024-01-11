@@ -3,11 +3,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="utility" uri="http://www.jahia.org/tags/utilityLib" %>
 
-<c:set var="pdfUrl" value="${currentNode.properties['cloudy:url'].string}"/>
+<%--<c:set var="pdfUrl" value="${currentNode.properties['cloudy:url'].string}"/>--%>
 <c:set var="pdfMinHeight" value="${not empty currentResource.moduleParams.pdfMinHeight ? currentResource.moduleParams.pdfMinHeight :
     '512'}"/>
 <iframe
-        src="${pdfUrl}"
+        src="${currentNode.getUrl()}"
         webkitallowfullscreen
         mozallowfullscreen
         allowfullscreen

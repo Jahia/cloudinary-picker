@@ -2,15 +2,14 @@ package org.jahia.se.modules.dam.cloudinary.edp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.jahia.modules.external.ExternalData;
 import org.jahia.modules.external.ExternalDataSource;
@@ -25,12 +24,8 @@ import javax.jcr.RepositoryException;
 import java.net.URI;
 import java.util.*;
 
-//,ExternalDataSource.Searchable.class not used for now, needed if you want to use AugSearch with external asset
-public class CloudinaryDataSource implements ExternalDataSource{
+public class CloudinaryDataSource implements ExternalDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudinaryDataSource.class);
-
-//    private static final String ASSET_ENTRY = "assets";
-//    private static final String ASSET_ENTRY_EXPAND = "embeds,thumbnails,file_properties";
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final CloudinaryProviderConfig cloudinaryProviderConfig;
@@ -54,30 +49,34 @@ public class CloudinaryDataSource implements ExternalDataSource{
     public ExternalData getItemByIdentifier(String identifier) throws ItemNotFoundException {
         try {
             if (identifier.equals("root")) {
-                return new ExternalData(identifier, "/", "jnt:contentFolder", new HashMap<String, String[]>());
-            }else{
+                return new ExternalData(identifier, "/", "jnt:folder", new HashMap<>());
+            } else {
+                String cloudyId = identifier;
+                boolean isContent = false;
+                if (identifier.endsWith("/jcr:content")) {
+                    cloudyId = StringUtils.substringBefore(identifier, "/jcr:content");
+                    isContent = true;
+                }
+
                 //TODO
-                synchronized (this){
-                    CloudinaryAsset cloudinaryAsset = cloudinaryCacheManager.getCloudinaryAsset(identifier);
-                    if(cloudinaryAsset == null){
-                        LOGGER.debug("no cacheEntry for : "+identifier);
-                        final String path = "/"+cloudinaryProviderConfig.getApiVersion()+"/"+cloudinaryProviderConfig.getCloudName()+"/resources/search";
-                        final StringEntity jsonEntity = new StringEntity("{\"expression\": \"asset_id = "+identifier+"\"}");
-//                        Map<String, String> query = new LinkedHashMap<String, String>();
-//                        query.put("expand",ASSET_ENTRY_EXPAND);
-                        cloudinaryAsset = queryCloudinary(path,jsonEntity);
+                synchronized (this) {
+                    CloudinaryAsset cloudinaryAsset = cloudinaryCacheManager.getCloudinaryAsset(cloudyId);
+                    if (cloudinaryAsset == null) {
+                        LOGGER.debug("no cacheEntry for : " + identifier);
+                        final String path = "/" + cloudinaryProviderConfig.getApiVersion() + "/" + cloudinaryProviderConfig.getCloudName() + "/resources/search";
+                        final StringEntity jsonEntity = new StringEntity("{\"expression\": \"asset_id = " + identifier + "\"}");
+                        cloudinaryAsset = queryCloudinary(path, jsonEntity);
                         cloudinaryCacheManager.cacheCloudinaryAsset(cloudinaryAsset);
                     }
-                    ExternalData data = new ExternalData(identifier, "/"+identifier, cloudinaryAsset.getJahiaNodeType(), cloudinaryAsset.getProperties());
-//                    List<String> mixins = new ArrayList<String>();
-//                    mixins.add("cloudymix:cloudyAsset");
-//                    data.setMixin(mixins);
-
+                    ExternalData data = new ExternalData(identifier, "/" + identifier, isContent ? "jnt:resource" : cloudinaryAsset.getJahiaNodeType(), cloudinaryAsset.getProperties());
+                    if (isContent) {
+                        data.setBinaryProperties(cloudinaryAsset.getBinaryProperties());
+                    }
                     return data;
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("",e);
+            LOGGER.error("", e);
             throw new ItemNotFoundException(e);
         }
     }
@@ -92,10 +91,10 @@ public class CloudinaryDataSource implements ExternalDataSource{
 
             if (splitPath.length <= 1) {
                 return getItemByIdentifier("root");
-
             } else if (splitPath.length == 2) {
                 return getItemByIdentifier(splitPath[1]);
-
+            } else if (splitPath.length == 3 && splitPath[2].equals("jcr:content")) {
+                return getItemByIdentifier(splitPath[1] + "/jcr:content");
             }
         } catch (ItemNotFoundException e) {
             throw new PathNotFoundException(e);
@@ -105,13 +104,7 @@ public class CloudinaryDataSource implements ExternalDataSource{
 
     @Override
     public Set<String> getSupportedNodeTypes() {
-        return Sets.newHashSet(
-                "jnt:contentFolder",
-                "cloudynt:image",
-                "cloudynt:video",
-                "cloudynt:pdf",
-                "cloudynt:document"
-        );
+        return Sets.newHashSet("jnt:folder", "cloudynt:image", "cloudynt:video", "cloudynt:pdf", "cloudynt:document", "jnt:resource");
     }
 
     @Override
@@ -126,27 +119,23 @@ public class CloudinaryDataSource implements ExternalDataSource{
 
     @Override
     public boolean itemExists(String s) {
-        return false;
+        try {
+            getItemByPath(s);
+            return true;
+        } catch (PathNotFoundException e) {
+            return false;
+        }
     }
 
     private CloudinaryAsset queryCloudinary(String path, StringEntity jsonEntity) throws RepositoryException {
-        LOGGER.debug("Query Cloudinary with path : {} and jsonEntity : {}",path,jsonEntity);
+        LOGGER.debug("Query Cloudinary with path : {} and jsonEntity : {}", path, jsonEntity);
         try {
             String schema = cloudinaryProviderConfig.getApiSchema();
             String endpoint = cloudinaryProviderConfig.getApiEndPoint();
             String apiKey = cloudinaryProviderConfig.getApiKey();
             String apiSecret = cloudinaryProviderConfig.getApiSecret();
 
-//            List<NameValuePair> parameters = new ArrayList<>(query.size());
-
-//            for (Map.Entry<String, String> entry : query.entrySet()) {
-//                parameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-//            }
-
-            URIBuilder builder = new URIBuilder()
-                    .setScheme(schema)
-                    .setHost(endpoint)
-                    .setPath(path);
+            URIBuilder builder = new URIBuilder().setScheme(schema).setHost(endpoint).setPath(path);
 
             URI uri = builder.build();
 
@@ -156,22 +145,20 @@ public class CloudinaryDataSource implements ExternalDataSource{
 
             //NOTE Cloudinary return content in ISO-8859-1 even if Accept-Charset = UTF-8 is set.
             //Need to use appropriate charset later to read the inputstream response.
-            String encoding = Base64.getEncoder().encodeToString((apiKey+":"+apiSecret).getBytes("UTF-8"));
-            postMethod.setHeader(HttpHeaders.AUTHORIZATION,"Basic " + encoding);
-            postMethod.setHeader("Content-Type","application/json");
-//            getMethod.setRequestHeader("Accept-Charset","ISO-8859-1");
-//            getMethod.setRequestHeader("Accept-Charset","UTF-8");
+            String encoding = Base64.getEncoder().encodeToString((apiKey + ":" + apiSecret).getBytes("UTF-8"));
+            postMethod.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding);
+            postMethod.setHeader("Content-Type", "application/json");
             CloseableHttpResponse resp = null;
             try {
                 resp = httpClient.execute(postMethod);
-                CloudinaryAsset cloudinaryAsset = mapper.readValue(EntityUtils.toString(resp.getEntity()),CloudinaryAsset.class);
+                CloudinaryAsset cloudinaryAsset = mapper.readValue(EntityUtils.toString(resp.getEntity()), CloudinaryAsset.class);
                 return cloudinaryAsset;
 
             } finally {
                 if (resp != null) {
                     resp.close();
                 }
-                LOGGER.debug("Request {} executed in {} ms",uri, (System.currentTimeMillis() - l));
+                LOGGER.debug("Request {} executed in {} ms", uri, (System.currentTimeMillis() - l));
             }
         } catch (Exception e) {
             LOGGER.error("Error while querying Cloudinary", e);
