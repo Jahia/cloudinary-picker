@@ -37,24 +37,25 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
         }
     }
 
-    public String getUrl(List<String> params) throws RepositoryException {
-        if(this.isNodeType(CONTENT_TYPE_IMAGE)){
-            List<String> cloudyParams = new ArrayList<>();
-            cloudyParams.add("f_auto");
-            for (String param : params) {
-                if (param.startsWith("width:")) {
-                    String width = StringUtils.substringAfter(param, "width:");
-                    if(width.trim().isEmpty()){
-                        width = URL_WIDTH; //default width
+    @Override
+    public String getUrl(List<String> params) {
+        try {
+            if (this.isNodeType(CONTENT_TYPE_IMAGE)) {
+                List<String> cloudyParams = new ArrayList<>();
+                cloudyParams.add("f_auto");
+                for (String param : params) {
+                    if (param.startsWith("width:")) {
+                        String width = StringUtils.substringAfter(param, "width:");
+                        if (width.trim().isEmpty()) {
+                            width = URL_WIDTH; //default width
+                        }
+                        cloudyParams.add("w_" + width);
+                    } else if (param.startsWith("height:")) {
+                        String height = StringUtils.substringAfter(param, "height:");
+                        if (!height.trim().isEmpty())
+                            cloudyParams.add("h_" + height);
                     }
-                    cloudyParams.add("w_" + width);
-                } else if (param.startsWith("height:")) {
-                    String height = StringUtils.substringAfter(param, "height:");
-                    if(!height.trim().isEmpty())
-                        cloudyParams.add("h_" + height);
                 }
-            }
-            try {
                 StringBuilder sb = new StringBuilder();
                 sb.append(node.getProperty("cloudy:baseUrl").getString());
                 sb.append("/").append(StringUtils.join(cloudyParams, ",")).append("/");
@@ -65,11 +66,11 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
                 }
 
                 return sb.toString();
-            } catch (RepositoryException e) {
-                return super.getUrl();
+            } else {
+                return this.getUrl();
             }
-        }else{
-            return this.getUrl();
+        } catch (RepositoryException e) {
+            return super.getUrl();
         }
     }
 
