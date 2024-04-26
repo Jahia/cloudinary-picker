@@ -37,6 +37,7 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
         }
     }
 
+    @Override
     public String getUrl(List<String> params) {
         try {
             if (this.isNodeType(CONTENT_TYPE_IMAGE)) {
