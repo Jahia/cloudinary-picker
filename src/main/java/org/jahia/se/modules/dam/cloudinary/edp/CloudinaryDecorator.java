@@ -5,7 +5,6 @@ import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.decorator.JCRNodeDecorator;
 
 import javax.jcr.RepositoryException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,11 +1,10 @@
 /* eslint camelcase: 0 */
-
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
+import {LoaderOverlay} from '../DesignSystem/LoaderOverlay';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from '@apollo/react-hooks';
 import {edpCoudinaryContentUUIDQuery} from './edpCoudinaryContentUUID.gql-queries';
-import {LoaderOverlay} from '../DesignSystem/LoaderOverlay';
 
 export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple}) => {
     const {t} = useTranslation();
