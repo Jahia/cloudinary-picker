@@ -11,7 +11,7 @@
     <groupId>org.jahia.se.modules</groupId>
     <artifactId>cloudinary-picker</artifactId>
     <name>Cloudinary picker</name>
-    <version>3.0.0</version>
+    <version>3.1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>This is the custom module (Cloudinary picker) for running on a Jahia server.</description>
 
@@ -19,7 +19,7 @@
         <connection>scm:git:git@github.com:Jahia/cloudinary-picker.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/cloudinary-picker.git</developerConnection>
         <url>https://github.com/Jahia/cloudinary-picker</url>
-    <tag>3_0_0</tag>
+    <tag>HEAD</tag>
   </scm>
 
     <properties>
