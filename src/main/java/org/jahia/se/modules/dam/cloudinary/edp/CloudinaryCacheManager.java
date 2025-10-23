@@ -75,7 +75,7 @@ public class CloudinaryCacheManager {
         return (CloudinaryAsset) CacheHelper.getObjectValue(cache, cacheKey);
     }
 
-    public void cacheCloudinaryAsset(CloudinaryAsset cloudinaryAsset) {
-        cache.put(new Element(cloudinaryAsset.getId(), new ModuleClassLoaderAwareCacheEntry(cloudinaryAsset, CACHE_NAME)));
+    public void cacheCloudinaryAsset(String cacheKey, CloudinaryAsset cloudinaryAsset) {
+        cache.put(new Element(cacheKey, new ModuleClassLoaderAwareCacheEntry(cloudinaryAsset, CACHE_NAME)));
     }
 }

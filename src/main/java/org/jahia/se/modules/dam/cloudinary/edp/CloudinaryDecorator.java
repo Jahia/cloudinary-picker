@@ -14,6 +14,7 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
 
     private final String THUMBNAIL_WIDTH = "200";
     private final String URL_WIDTH = "1024";
+
     public CloudinaryDecorator(JCRNodeWrapper node) {
         super(node);
     }
@@ -29,52 +30,82 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
 
     @Override
     public String getUrl() {
+        return buildCloudinaryUrl(null);
+    }
+
+    @Override
+    public String getUrl(List<String> params) {
+        return buildCloudinaryUrl(params);
+    }
+
+    private String buildCloudinaryUrl(List<String> params) {
         try {
-            return node.getProperty("cloudy:url").getString();
+            String baseUrl = node.getProperty("cloudy:baseUrl").getString();
+            String endUrl = node.getProperty("cloudy:endUrl").getString();
+
+            // Check if we have derived transformation from path
+            String derivedTransformation = null;
+            if (node.hasProperty("cloudy:derivedTransformation")) {
+                derivedTransformation = node.getProperty("cloudy:derivedTransformation").getString();
+            }
+
+            // Build transformations
+            List<String> transformations = new ArrayList<>();
+
+            // Add derived transformation if present (takes priority)
+            if (derivedTransformation != null && !derivedTransformation.isEmpty()) {
+                transformations.add(derivedTransformation);
+            } else if (params != null && !params.isEmpty()) {
+                // Build transformations from params
+                transformations.addAll(buildTransformationsFromParams(params));
+            }
+
+            // Build final URL
+            StringBuilder sb = new StringBuilder();
+            sb.append(baseUrl).append("/");
+
+            if (!transformations.isEmpty()) {
+                sb.append(String.join(",", transformations)).append("/");
+            }
+
+            sb.append(endUrl);
+
+            return sb.toString();
         } catch (RepositoryException e) {
             return super.getUrl();
         }
     }
 
-    @Override
-    public String getUrl(List<String> params) {
-        try {
-            if (this.isNodeType(CONTENT_TYPE_IMAGE)) {
-                List<String> cloudyParams = new ArrayList<>();
-                cloudyParams.add("f_auto");
-                for (String param : params) {
-                    if (param.startsWith("width:")) {
-                        String width = StringUtils.substringAfter(param, "width:");
-                        if (width.trim().isEmpty()) {
-                            width = URL_WIDTH; //default width
-                        }
-                        cloudyParams.add("w_" + width);
-                    } else if (param.startsWith("height:")) {
-                        String height = StringUtils.substringAfter(param, "height:");
-                        if (!height.trim().isEmpty())
-                            cloudyParams.add("h_" + height);
-                    }
-                }
-                try {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(node.getProperty("cloudy:baseUrl").getString());
-                    sb.append("/").append(StringUtils.join(cloudyParams, ",")).append("/");
-                    if (node.hasProperty("cloudy:poster")) {
-                        sb.append(node.getProperty("cloudy:poster").getString());
-                    } else if (node.hasProperty("cloudy:endUrl")) {
-                        sb.append(node.getProperty("cloudy:endUrl").getString());
-                    }
+    private List<String> buildTransformationsFromParams(List<String> params) {
+        List<String> transformations = new ArrayList<>();
+        transformations.add("f_auto"); // Always add auto format
 
-                    return sb.toString();
-                } catch (RepositoryException e) {
-                    return super.getUrl();
+        for (String param : params) {
+            if (param.startsWith("width:")) {
+                String width = StringUtils.substringAfter(param, "width:");
+                if (width.trim().isEmpty()) {
+                    width = URL_WIDTH;
                 }
-            } else {
-                return this.getUrl();
+                transformations.add("w_" + width);
+            } else if (param.startsWith("height:")) {
+                String height = StringUtils.substringAfter(param, "height:");
+                if (!height.trim().isEmpty()) {
+                    transformations.add("h_" + height);
+                }
+            } else if (param.startsWith("crop:")) {
+                String crop = StringUtils.substringAfter(param, "crop:");
+                if (!crop.trim().isEmpty()) {
+                    transformations.add("c_" + crop);
+                }
+            } else if (param.startsWith("gravity:")) {
+                String gravity = StringUtils.substringAfter(param, "gravity:");
+                if (!gravity.trim().isEmpty()) {
+                    transformations.add("g_" + gravity);
+                }
             }
-        }catch (RepositoryException e) {
-            return this.getUrl();
         }
+
+        return transformations;
     }
 
     @Override
@@ -83,10 +114,12 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
         try {
             StringBuilder sb = new StringBuilder();
             sb.append(node.getProperty("cloudy:baseUrl").getString());
-            if("poster".equals(name))
-                width= URL_WIDTH;
 
-            sb.append("/f_auto,w_"+width+"/");
+            if ("poster".equals(name)) {
+                width = URL_WIDTH;
+            }
+
+            sb.append("/f_auto,w_").append(width).append("/");
 
             if (node.hasProperty("cloudy:poster")) {
                 sb.append(node.getProperty("cloudy:poster").getString());

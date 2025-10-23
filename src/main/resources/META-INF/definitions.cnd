@@ -24,8 +24,11 @@
  - cloudy:status (string) fulltextsearchable=no
  - cloudy:accessMode (string) fulltextsearchable=no
  - cloudy:accessControl (string) multiple fulltextsearchable=no
+ - cloudy:derivedTransformation (string) fulltextsearchable=no
 
 [cloudynt:image] > jnt:file, jmix:image, cloudymix:cloudyAsset
+ - cloudy:derivedTransformation (string) fulltextsearchable=no
+
 [cloudynt:document] > jnt:file, cloudymix:cloudyAsset
 
 [cloudynt:pdf] > jnt:file, cloudymix:cloudyAsset

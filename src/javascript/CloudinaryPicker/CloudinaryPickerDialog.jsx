@@ -5,8 +5,9 @@ import {LoaderOverlay} from '../DesignSystem/LoaderOverlay';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from '@apollo/react-hooks';
 import {edpCoudinaryContentUUIDQuery} from './edpCoudinaryContentUUID.gql-queries';
+import {getQueryParamsBase36} from './base36';
 
-export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple}) => {
+export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple, initialSelectedItem}) => {
     const {t} = useTranslation();
     const [cloudinaryData, setCloudinaryData] = useState();
 
@@ -14,7 +15,13 @@ export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple})
 
     const {data, loading, error} = useQuery(edpCoudinaryContentUUIDQuery, {
         variables: {
-            edpContentPaths: cloudinaryData && cloudinaryData.assets.map(asset => config.mountPoint + '/' + asset.id)
+            edpContentPaths: cloudinaryData && cloudinaryData.assets.map(asset => {
+                const paramsHash = asset.derived && asset.derived.length > 0 ?
+                    getQueryParamsBase36(asset.derived[0].raw_transformation) :
+                    '';
+                const path = config.mountPoint + '/' + asset.id;
+                return paramsHash ? path + '_' + paramsHash : path;
+            })
         },
         skip: !cloudinaryData
     });
@@ -46,10 +53,14 @@ export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple})
                 name,
                 url: derived && derived.length > 0 ? derived[0].url : url
             }));
-
-            onItemSelection(data?.jcr?.result.map((m, i) => ({...m, ...exts[i]})));
+            const currentSelection = data.jcr.result.map((m, i) => ({...m, ...exts[i]}));
+            if (isMultiple) {
+                onItemSelection([...initialSelectedItem, ...currentSelection]);
+            } else {
+                onItemSelection(currentSelection);
+            }
         }
-    }, [cloudinaryData, data, error, loading, onItemSelection]);
+    }, [cloudinaryData, data, error, loading, onItemSelection, isMultiple, initialSelectedItem]);
 
     if (error) {
         const message = t(
@@ -70,5 +81,6 @@ export const CloudinaryPickerDialog = ({className, onItemSelection, isMultiple})
 CloudinaryPickerDialog.propTypes = {
     className: PropTypes.string,
     onItemSelection: PropTypes.func.isRequired,
-    isMultiple: PropTypes.bool
+    isMultiple: PropTypes.bool,
+    initialSelectedItem: PropTypes.arrayOf(PropTypes.object)
 };
