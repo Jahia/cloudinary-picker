@@ -78,7 +78,7 @@ const encodeDecimal = (value, multiplier = 100) => {
  * @returns {string|null} Encoded aspect ratio in base36
  *
  * @example
- * encodeAspectRatio("16:9") // returns "g:5" (16 and 9 in base36)
+ * encodeAspectRatio("16:9") // returns "g_5" (16 and 9 in base36)
  * encodeAspectRatio("1.5") // returns "1" (1 in base36)
  */
 const encodeAspectRatio = ar => {
@@ -88,7 +88,7 @@ const encodeAspectRatio = ar => {
 
     const parts = ar.split(':');
     if (parts.length === 2) {
-        return `${parseInt(parts[0], 10).toString(36)}:${parseInt(parts[1], 10).toString(36)}`;
+        return `${parseInt(parts[0], 10).toString(36)}_${parseInt(parts[1], 10).toString(36)}`;
     }
 
     return parseInt(ar, 10).toString(36);

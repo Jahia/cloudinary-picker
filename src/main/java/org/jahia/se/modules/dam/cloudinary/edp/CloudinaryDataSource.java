@@ -298,9 +298,9 @@ public class CloudinaryDataSource implements ExternalDataSource {
                         transformation.append(key).append("_").append(decimalValue);
                         break;
                     case "ar":
-                        // Handle aspect ratio (e.g., "g:5" -> "16:9")
-                        if (value.contains(":")) {
-                            String[] ratio = value.split(":");
+                        // Handle aspect ratio (e.g., "g_5" -> "16:9")
+                        if (value.contains("_")) {
+                            String[] ratio = value.split("_");
                             transformation.append("ar_").append(Integer.parseInt(ratio[0], 36))
                                     .append(":").append(Integer.parseInt(ratio[1], 36));
                         } else {
