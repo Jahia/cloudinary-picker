@@ -103,11 +103,11 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
     /**
      * Builds transformation list from template parameters.
      *
-     * Supported parameters:
-     * - width: Target width
-     * - height: Target height
-     * - crop: Crop mode (scale, fit, fill, etc.)
-     * - gravity: Focal point (center, face, auto, etc.)
+     * Supported parameters (long and short formats):
+     * - width:/w: Target width
+     * - height:/h: Target height
+     * - crop:/c: Crop mode (scale, fit, fill, etc.)
+     * - gravity:/g: Focal point (center, face, auto, etc.)
      *
      * @param params List of "key:value" parameter strings
      * @return List of Cloudinary transformation strings
@@ -117,24 +117,32 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
         transformations.add("f_auto"); // Always add auto format for optimization
 
         for (String param : params) {
-            if (param.startsWith("width:")) {
-                String width = StringUtils.substringAfter(param, "width:");
+            if (param.startsWith("width:") || param.startsWith("w:")) {
+                String width = param.startsWith("width:")
+                    ? StringUtils.substringAfter(param, "width:")
+                    : StringUtils.substringAfter(param, "w:");
                 if (width.trim().isEmpty()) {
                     width = URL_SIZE;
                 }
                 transformations.add("w_" + width);
-            } else if (param.startsWith("height:")) {
-                String height = StringUtils.substringAfter(param, "height:");
+            } else if (param.startsWith("height:") || param.startsWith("h:")) {
+                String height = param.startsWith("height:")
+                    ? StringUtils.substringAfter(param, "height:")
+                    : StringUtils.substringAfter(param, "h:");
                 if (!height.trim().isEmpty()) {
                     transformations.add("h_" + height);
                 }
-            } else if (param.startsWith("crop:")) {
-                String crop = StringUtils.substringAfter(param, "crop:");
+            } else if (param.startsWith("crop:") || param.startsWith("c:")) {
+                String crop = param.startsWith("crop:")
+                    ? StringUtils.substringAfter(param, "crop:")
+                    : StringUtils.substringAfter(param, "c:");
                 if (!crop.trim().isEmpty()) {
                     transformations.add("c_" + crop);
                 }
-            } else if (param.startsWith("gravity:")) {
-                String gravity = StringUtils.substringAfter(param, "gravity:");
+            } else if (param.startsWith("gravity:") || param.startsWith("g:")) {
+                String gravity = param.startsWith("gravity:")
+                    ? StringUtils.substringAfter(param, "gravity:")
+                    : StringUtils.substringAfter(param, "g:");
                 if (!gravity.trim().isEmpty()) {
                     transformations.add("g_" + gravity);
                 }
