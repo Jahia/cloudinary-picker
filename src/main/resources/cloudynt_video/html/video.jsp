@@ -5,7 +5,7 @@
 <%@ taglib prefix="utility" uri="http://www.jahia.org/tags/utilityLib" %>
 <%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions"%>
 
-<c:set var="cloudName" value="${functions:getConfigValue('org.jahia.se.modules.cloudinary_picker_credentials','cloudinary_provider.cloudName')}"/>
+<c:set var="cloudName" value="${functions:getConfigValue('org.jahia.se.modules.dam.cloudinary.provider.config','cloudName')}"/>
 <c:set var="publicId" value="${currentNode.properties['cloudy:publicId'].string}"/>
 
 <link href="https://unpkg.com/cloudinary-video-player@latest/dist/cld-video-player.min.css" rel="stylesheet">

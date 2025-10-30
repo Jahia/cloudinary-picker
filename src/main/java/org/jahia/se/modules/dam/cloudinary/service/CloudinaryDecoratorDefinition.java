@@ -7,15 +7,17 @@ import org.osgi.service.component.annotations.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.jahia.se.modules.dam.cloudinary.Constants.*;
+
 @Component(immediate = true, service = JCRNodeDecoratorDefinition.class)
 public class CloudinaryDecoratorDefinition extends JCRNodeDecoratorDefinition {
     private Map<String, Class> decorators = new HashMap<>();
 
     public CloudinaryDecoratorDefinition() {
-        decorators.put("cloudynt:image", CloudinaryDecorator.class);
-        decorators.put("cloudynt:document", CloudinaryDecorator.class);
-        decorators.put("cloudynt:pdf", CloudinaryDecorator.class);
-        decorators.put("cloudynt:video", CloudinaryDecorator.class);
+        decorators.put(CONTENT_TYPE_IMAGE, CloudinaryDecorator.class);
+        decorators.put(CONTENT_TYPE_DOC, CloudinaryDecorator.class);
+        decorators.put(CONTENT_TYPE_PDF, CloudinaryDecorator.class);
+        decorators.put(CONTENT_TYPE_VIDEO, CloudinaryDecorator.class);
     }
 
     @Override

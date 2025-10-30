@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -14,17 +15,20 @@ import org.apache.http.util.EntityUtils;
 import org.jahia.modules.external.ExternalData;
 import org.jahia.modules.external.ExternalDataSource;
 import org.jahia.se.modules.dam.cloudinary.model.CloudinaryAsset;
-import org.jahia.se.modules.dam.cloudinary.service.CloudinaryProviderConfig;
+import org.jahia.se.modules.dam.cloudinary.service.CloudinaryProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.jahia.se.modules.dam.cloudinary.Constants.*;
 
 /**
  * External Data Source for Cloudinary assets integration in Jahia.
@@ -45,9 +49,9 @@ public class CloudinaryDataSource implements ExternalDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudinaryDataSource.class);
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private final CloudinaryProviderConfig cloudinaryProviderConfig;
+    private final CloudinaryProviderService cloudinaryProviderService;
     private final CloudinaryCacheManager cloudinaryCacheManager;
-    private final CloseableHttpClient httpClient;
+    private CloseableHttpClient httpClient;
 
     // Pattern to extract derived parameters from identifier (assetId_params)
     private final Pattern DERIVED_PATTERN = Pattern.compile("^(.+?)_(.+)$");
@@ -61,10 +65,41 @@ public class CloudinaryDataSource implements ExternalDataSource {
     private static final String[] GRAVITY_VALUES = {"center", "north", "south", "east", "west", "north_east", "north_west", "south_east", "south_west", "face", "faces", "auto", "auto_face", "auto_faces"};
     private static final String[] FORMATS = {"webp", "jpg", "png", "gif", "auto"};
 
-    public CloudinaryDataSource(CloudinaryProviderConfig cloudinaryProviderConfig, CloudinaryCacheManager cloudinaryCacheManager) {
-        this.cloudinaryProviderConfig = cloudinaryProviderConfig;
+    public CloudinaryDataSource(CloudinaryProviderService cloudinaryProviderService, CloudinaryCacheManager cloudinaryCacheManager) {
+        this.cloudinaryProviderService = cloudinaryProviderService;
         this.cloudinaryCacheManager = cloudinaryCacheManager;
-        this.httpClient = HttpClients.createDefault();
+        this.httpClient = createHttpClient();
+    }
+
+    /**
+     * Creates HTTP client with configured timeouts from provider configuration.
+     *
+     * @return Configured CloseableHttpClient
+     */
+    private CloseableHttpClient createHttpClient() {
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(cloudinaryProviderService.getConfig().connectionTimeout())
+                .setSocketTimeout(cloudinaryProviderService.getConfig().socketTimeout())
+                .setConnectionRequestTimeout(cloudinaryProviderService.getConfig().connectionRequestTimeout())
+                .build();
+
+        return HttpClients.custom()
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+    }
+
+    /**
+     * Closes the HTTP client and releases resources.
+     * Should be called when the data source is being destroyed.
+     */
+    public void destroy() {
+        if (httpClient != null) {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                LOGGER.warn("Error closing HTTP client", e);
+            }
+        }
     }
 
     @Override
@@ -108,7 +143,7 @@ public class CloudinaryDataSource implements ExternalDataSource {
 
                         // Query Cloudinary API for asset metadata
                         // Search API returns more metadata than direct resource call
-                        final String path = "/" + cloudinaryProviderConfig.getApiVersion() + "/" + cloudinaryProviderConfig.getCloudName() + "/resources/search";
+                        final String path = "/" + cloudinaryProviderService.getConfig().apiVersion() + "/" + cloudinaryProviderService.getConfig().cloudName() + "/resources/search";
                         final StringEntity jsonEntity = new StringEntity("{\"expression\": \"asset_id = " + cloudyId + "\"}");
                         cloudinaryAsset = queryCloudinary(path, jsonEntity, derivedParams);
 
@@ -159,7 +194,7 @@ public class CloudinaryDataSource implements ExternalDataSource {
 
     @Override
     public Set<String> getSupportedNodeTypes() {
-        return Sets.newHashSet("jnt:folder", "cloudynt:image", "cloudynt:video", "cloudynt:pdf", "cloudynt:document", "jnt:resource");
+        return Sets.newHashSet("jnt:folder", CONTENT_TYPE_IMAGE, CONTENT_TYPE_VIDEO, CONTENT_TYPE_PDF, CONTENT_TYPE_DOC, "jnt:resource");
     }
 
     @Override
@@ -185,24 +220,26 @@ public class CloudinaryDataSource implements ExternalDataSource {
     /**
      * Queries Cloudinary API and processes the response.
      *
+     * Uses timeout configuration from CloudinaryProviderConfig to prevent hanging on unresponsive service.
+     *
      * @param path API endpoint path
      * @param jsonEntity Request body with search expression
      * @param derivedParams Base36-encoded transformation parameters
      * @return CloudinaryAsset with metadata and decoded transformations
-     * @throws RepositoryException if query fails
+     * @throws RepositoryException if query fails or times out
      */
     private CloudinaryAsset queryCloudinary(String path, StringEntity jsonEntity, String derivedParams) throws RepositoryException {
         LOGGER.debug("Query Cloudinary with path : {} and derived params: {}", path, derivedParams);
         try {
-            String schema = cloudinaryProviderConfig.getApiSchema();
-            String endpoint = cloudinaryProviderConfig.getApiEndPoint();
-            String apiKey = cloudinaryProviderConfig.getApiKey();
-            String apiSecret = cloudinaryProviderConfig.getApiSecret();
+            String schema = cloudinaryProviderService.getConfig().apiSchema();
+            String endpoint = cloudinaryProviderService.getConfig().apiEndPoint();
+            String apiKey = cloudinaryProviderService.getConfig().apiKey();
+            String apiSecret = cloudinaryProviderService.getConfig().apiSecret();
 
             URIBuilder builder = new URIBuilder().setScheme(schema).setHost(endpoint).setPath(path);
             URI uri = builder.build();
 
-            long l = System.currentTimeMillis();
+            long startTime = System.currentTimeMillis();
             final HttpPost postMethod = new HttpPost(uri);
             postMethod.setEntity(jsonEntity);
 
@@ -212,6 +249,11 @@ public class CloudinaryDataSource implements ExternalDataSource {
             postMethod.setHeader("Content-Type", "application/json");
 
             try (CloseableHttpResponse resp = httpClient.execute(postMethod)) {
+                int statusCode = resp.getStatusLine().getStatusCode();
+                if (statusCode != 200) {
+                    throw new RepositoryException("Cloudinary API returned status code: " + statusCode);
+                }
+
                 CloudinaryAsset cloudinaryAsset = mapper.readValue(EntityUtils.toString(resp.getEntity()), CloudinaryAsset.class);
 
                 // If derived params exist, decode them from base36 and add to asset properties
@@ -221,9 +263,9 @@ public class CloudinaryDataSource implements ExternalDataSource {
                         cloudinaryAsset.addProperty("cloudy:derivedTransformation", decodedParams);
                     }
                 }
+
+                LOGGER.debug("Request {} executed in {} ms", uri, (System.currentTimeMillis() - startTime));
                 return cloudinaryAsset;
-            } finally {
-                LOGGER.debug("Request {} executed in {} ms", uri, (System.currentTimeMillis() - l));
             }
         } catch (Exception e) {
             LOGGER.error("Error while querying Cloudinary", e);

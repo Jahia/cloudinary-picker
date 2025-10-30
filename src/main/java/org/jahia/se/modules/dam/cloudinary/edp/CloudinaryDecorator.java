@@ -8,8 +8,6 @@ import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jahia.se.modules.dam.cloudinary.ContentTypesConstants.*;
-
 /**
  * JCR Node Decorator for Cloudinary assets.
  *

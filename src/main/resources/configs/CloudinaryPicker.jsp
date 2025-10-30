@@ -4,20 +4,20 @@
 <%@ taglib prefix="utility" uri="http://www.jahia.org/tags/utilityLib" %>
 <%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions"%>
 
-<c:set var="cloudinaryConfig" value="${functions:getConfigValues('org.jahia.se.modules.cloudinary_picker_credentials')}"/>
+<c:set var="cloudyConfig" value="${functions:getConfigValues('org.jahia.se.modules.dam.cloudinary.provider.config')}"/>
 
 <c:choose>
-    <c:when test="${! empty cloudinaryConfig}">
+    <c:when test="${! empty cloudyConfig}">
         window.contextJsParameters.config.cloudinary={
-            apiKey:"${cloudinaryConfig['cloudinary_provider.apiKey']}",
-            cloudName:"${cloudinaryConfig['cloudinary_provider.cloudName']}",
-            mountPoint:"/sites/systemsite/contents/dam-cloudinary",
-            applyOnPickers:"${cloudinaryConfig['cloudinary_provider.applyOnPickers']}",
+            apiKey:"${cloudyConfig['apiKey']}",
+            cloudName:"${cloudyConfig['cloudName']}",
+            applyOnPickers:"${cloudyConfig['frontApplyOnPickers']}",
+            mountPoint:"${cloudyConfig['edpMountPath']}"
         }
         console.debug("%c Cloudinary config is added to contextJsParameters.config", 'color: #3c8cba');
     </c:when>
     <c:otherwise>
-        <utility:logger level="warn" value="no content of cloudinarynt:mountPoint available"/>
-        console.warn("no content of cloudinarynt:mountPoint available");
+        <utility:logger level="warn" value="Cloudinary provider configuration is not available"/>
+        console.warn("Cloudinary provider configuration is not available");
     </c:otherwise>
 </c:choose>

@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.jahia.se.modules.dam.cloudinary.ContentTypesConstants.*;
+import static org.jahia.se.modules.dam.cloudinary.Constants.*;
 
 public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset> {
 
