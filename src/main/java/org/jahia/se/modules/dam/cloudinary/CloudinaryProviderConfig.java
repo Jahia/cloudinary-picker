@@ -62,7 +62,7 @@ public @interface CloudinaryProviderConfig {
             defaultValue = "image,file,video",
             type = AttributeType.STRING
     )
-    String frontApplyOnPickers() default "image,file,video";
+    String applyOnPickers() default "image,file,video";
 
     @AttributeDefinition(
             name = "EDP Mount Path",

@@ -11,7 +11,7 @@
         window.contextJsParameters.config.cloudinary={
             apiKey:"${cloudyConfig['apiKey']}",
             cloudName:"${cloudyConfig['cloudName']}",
-            applyOnPickers:"${cloudyConfig['frontApplyOnPickers']}",
+            applyOnPickers:"${cloudyConfig['applyOnPickers']}",
             mountPoint:"${cloudyConfig['edpMountPath']}"
         }
         console.debug("%c Cloudinary config is added to contextJsParameters.config", 'color: #3c8cba');
