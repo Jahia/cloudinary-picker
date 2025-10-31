@@ -57,6 +57,14 @@ public @interface CloudinaryProviderConfig {
     String cloudName() default StringUtils.EMPTY;
 
     @AttributeDefinition(
+            name="Front Key URL Pattern",
+            description = "Specifies the string used to identify Cloudinary URLs within a rich text editor. This string is used to trigger the appropriate picker modal when a user edits an image in the rich text editor.",
+            defaultValue = "cloudinary",
+            type = AttributeType.STRING
+    )
+    String keyUrlPattern() default "cloudinary";
+
+    @AttributeDefinition(
             name = "Front Apply On Pickers",
             description = "Specifies the picker types that allows the Cloudinary picker.",
             defaultValue = "image,file,video",

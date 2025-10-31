@@ -66,6 +66,7 @@ Optional (with defaults):
 - API Schema (`apiSchema`) = https  
 - API EndPoint (`apiEndPoint`) = api.cloudinary.com  
 - API Version (`apiVersion`) = v1_1  
+- Front Key URL Pattern (`keyUrlPattern`) = cloudinary
 - Front Apply On Pickers (`applyOnPickers`) = image,file,video  
 - EDP Mount Path (`edpMountPath`) = /sites/systemsite/contents/dam-cloudinary  
 - Connection Timeout (ms) (`connectionTimeout`) = 10000  

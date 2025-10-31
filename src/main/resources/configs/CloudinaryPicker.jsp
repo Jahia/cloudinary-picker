@@ -11,6 +11,7 @@
         window.contextJsParameters.config.cloudinary={
             apiKey:"${cloudyConfig['apiKey']}",
             cloudName:"${cloudyConfig['cloudName']}",
+            keyUrlPattern:"${cloudyConfig['keyUrlPattern']}",
             applyOnPickers:"${cloudyConfig['applyOnPickers']}",
             mountPoint:"${cloudyConfig['edpMountPath']}"
         }
