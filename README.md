@@ -1,343 +1,250 @@
-# cloudinary-picker
-
-This module contains the implementation of the Cloudinary Content Picker for Jahia 8.2.x.x
-
-With this module, a contributor can easily add a Cloudinary media asset to a Jahia page with advanced image transformation capabilities (crop, resize, aspect ratio).
-
-![](./doc/images/main.png)
-
-- [Module content](#module-content)
-- [Quick Start](#quick-start)
-    - [Deploy the module](#deploy-the-module)
-      - [From the source](#from-the-source)
-      - [From the store](#from-the-store)
-    - [Post Install Configuration](#post-install-configuration)
-- [Module details](#module-details)
-    - [Architecture Overview](#architecture-overview)
-    - [Data flow](#data-flow)
-    - [Image Transformations](#image-transformations)
-    - [URL Encoding](#url-encoding)
-    - [Caching Strategy](#caching-strategy)
-
-## Module content
-
-This module contains:
-* The definition of a `Cloudinary Asset Content Reference` content ([definition.cnd][definition.cnd]).
-* A React application : `Cloudinary Content Picker` ([CloudinaryPicker.jsx][react:index.js]).
-  This application is a custom jContent SelectorType (aka picker) and is used to pick a Cloudinary asset with crop and resize capabilities.
-* A proxy servlet filter used to call the Cloudinary Admin API from the frontend
-    `Cloudinary Proxy Servlet` ([CloudinaryProxyServlet.java]).
-* A *light* External Data Provider (EDP) implementation named
-    `Cloudinary Asset Provider` ([CloudinaryDataSource.java]) with URL transformation support.
-* An OSGI-based configuration service ([CloudinaryProviderService]) for managing Cloudinary credentials and settings.
-* A decorator ([CloudinaryDecorator.java]) that handles dynamic URL generation with transformations.
-* A caching layer ([CloudinaryCacheManager]) for optimizing asset retrieval and transformed URLs.
-
-Not covered in this module:
-* CKEditor Cloudinary media picker
-
-## Quick Start
-
-### Deploy the module
-The module can be installed in 2 ways, from the source or from the store.
-
-#### From the source
-1. Download the zip archive of the latest release.
-2. If you already know your Cloudinary configuration (cloud name and API key) you can update the default
-   configuration. Update properties in the [org.jahia.se.modules.dam.cloudinary.provider.config.cfg][mount.cfg] file.
-3. Go to the root of the repository.
-4. Run the `mvn clean install` command. This creates a jar file in the *target* repository.
-   > you must have a **java sdk** and **maven** installed
-5. In jContent, go to `Administration` panel.
-6. In the `Server` section, expand `Modules and Extensions` and click `Modules`.
-7. From the right panel, click `SELECT MODULE` and select the jar file in the *target* repository.
-8. Finally, click `UPLOAD`.
-
-#### From the store
-1. In jContent, navigate to `Administration`.
-2. In the `Server` section, expand the `Modules and Extensions` entry and click `Modules`.
-3. From the right panel, click `Available modules` and search for **cloudinary**.
-4. Click the install icon ![201] in the right of the package to download and install the module.
-5. Wait until the module is loading.
-
-#### Check install
-If the module is properly deployed you should find it in the `Installed modules` section.
+# Cloudinary Picker for Jahia
+
+Cloudinary Picker is a Jahia (8.2+) module that lets contributors select media from Cloudinary, apply optional transformations (crop, resize, aspect ratio), and reference those assets in Jahia without duplicating binaries locally. Assets remain served through Cloudinary’s CDN for optimal delivery.
+
+## Table of Contents
+1. [Introduction](#1-introduction)
+2. [Quick Start](#2-quick-start)
+   - [Install from Jahia Store](#21-install-from-jahia-store)
+   - [Configure OSGI (Cloudinary Provider)](#22-configure-osgi-cloudinary-provider)
+   - [Cache Configuration](#23-optional-cache-configuration)
+   - [Enable the Module on a Site](#24-enable-the-module-on-a-site)
+   - [Use in Content](#25-use-in-content)
+3. [Technical Overview](#3-technical-overview)
+   - [Architecture](#31-architecture-simplified)
+   - [Functional Flow](#32-functional-flow)
+   - [Transformation Encoding](#33-transformation-encoding)
+   - [Caching Strategy](#34-caching-strategy)
+   - [Security](#35-security)
+   - [Performance](#36-performance)
+   - [JCR Types](#37-jcr-types-see-definitionscnd)
+   - [OSGI Parameters](#38-osgi-parameters-summary)
+4. [Troubleshooting](#4-troubleshooting)
+5. [Build from Source](#5-build-from-source)
+6. [Resources](#6-resources)
+7. [License / Support](#7-license--support)
+8. [Revision Notes](#8-revision-notes)
+
+---
+
+## 1. Introduction
+
+Key Features:
+- Visual picker powered by Cloudinary Media Library
+- On-the-fly crop & resize before inserting
+- Lightweight JCR references (no file copy)
+- Automatic delivery optimization (e.g. `f_auto`)
+- Supports images, videos, and documents (PDF/other)
+
+Main JCR node types provided:
+- `cloudynt:image`
+- `cloudynt:video`
+- `cloudynt:pdf`
+- `cloudynt:document`
+
+---
+
+## 2. Quick Start
+
+### 2.1 Install from Jahia Store
+1. Go to: jContent → Administration → Server → Modules and Extensions → Modules  
+2. Open the “Available modules” tab  
+3. Search for “cloudinary”  
+4. Click the install icon  
+5. Wait until it appears under “Installed modules”  
+
+### 2.2 Configure OSGI (Cloudinary Provider)
+Open: `https://<your-jahia-host>/tools` → OSGI Console → OSGI → Configuration  
+Find: Cloudinary Provider (PID: `org.jahia.se.modules.dam.cloudinary.provider.config`)
+
+Mandatory:
+- Cloud Name (`cloudName`)
+- API Key (`apiKey`)
+- API Secret (`apiSecret` – password field)
+
+Optional (with defaults):
+- API Schema (`apiSchema`) = https  
+- API EndPoint (`apiEndPoint`) = api.cloudinary.com  
+- API Version (`apiVersion`) = v1_1  
+- Front Apply On Pickers (`applyOnPickers`) = image,file,video  
+- EDP Mount Path (`edpMountPath`) = /sites/systemsite/contents/dam-cloudinary  
+- Connection Timeout (ms) (`connectionTimeout`) = 10000  
+- Socket Timeout (ms) (`socketTimeout`) = 30000  
+- Connection Request Timeout (ms) (`connectionRequestTimeout`) = 10000  
+
+Save. The provider starts only if the 3 mandatory fields are filled.
+
+### 2.3 (Optional) Cache Configuration
+PID: `org.jahia.se.modules.dam.cloudinary.cache.config`  
+Parameters (if implemented):
+- `edpCacheName` (e.g. `EDPCloudinary`)
+- `edpCacheTtl` (time-to-live seconds, default 28800 = 8h)
+- `edpCacheTti` (time-to-idle seconds, default 3600 = 1h)
+
+### 2.4 Enable the Module on a Site
+jContent → Administration → Site Settings → Modules  
+Activate “Cloudinary Picker” for the target site → Save.
+
+### 2.5 Use in Content
+1. Create or Edit a content in your jahia web project
+2. Add a “Cloudinary Asset” as image, video or file weak-reference
+3. Click the field to open the picker
+4. Select an asset (optionally crop/resize)
+5. Insert
+6. Save content
+
+Supported transformations in picker workflow: crop modes, resize (e.g. `c_fill`, `c_fit`, `c_limit`), aspect ratios, gravity, plus automatic format (`f_auto`).
+
+> A “Cloudinary Asset” can also be added inside RichText editor (image insertion)
+---
+
+## 3. Technical Overview
 
-If you have installed the module from the store or if you didn't configure the properties
-in the [org.jahia.se.modules.dam.cloudinary.provider.config.cfg][mount.cfg] file before building the module,
-you must complete the post-install configuration to start the Cloudinary provider.
-
->Don't forget to enable the module for one of your projects
-
-### Post Install Configuration
->Skip this section if you have already configured the configuration file during the *install from the source* process.
-> This configuration doesn't require a server restart.
-
-To request the Cloudinary server, you must configure the module with your Cloudinary API access information.
-
-#### Provider Configuration
-
-To set up your Cloudinary API access:
-1. Go to jahia tools (*https://\<jahia host\>/tools*).
-2. From the tools UI, click `OSGI console` under **Administration and Guidance**.
-
-   ![][0070]
-
-3. In the top menu expand the entry **OSGI** and click **Configuration**.
-
-   ![][0072]
-
-4. Look for `Cloudinary Provider` or filter by PID `org.jahia.se.modules.dam.cloudinary.provider.config` and click on it.
-
-5. Update the **required** properties:
-   - **Cloud Name**: Your Cloudinary cloud name (e.g., `demo-account`)
-   - **API Key**: Your Cloudinary API key (e.g., `123456789012345`)
-   - **API Secret**: Your Cloudinary API secret - stored securely as password
-
-   You can find these credentials in your [Cloudinary Console Dashboard](https://cloudinary.com/console).
-
-6. Optionally, adjust these settings if needed:
-   
-   **API Configuration:**
-   - **API Schema**: The HTTP schema for API calls (default: `https`)
-   - **API EndPoint**: The Cloudinary API endpoint (default: `api.cloudinary.com`)
-   - **API Version**: The Cloudinary API version (default: `v1_1`)
-   
-   **Frontend Settings:**
-   - **Front Apply On Pickers**: Picker types where Cloudinary is available (default: `image,file,video`)
-   
-   **Backend Settings:**
-   - **EDP Mount Path**: JCR path for Cloudinary assets (default: `/sites/systemsite/contents/dam-cloudinary`)
-   - **Connection Timeout (ms)**: Time to establish connection (default: 10000)
-   - **Socket Timeout (ms)**: Time to wait for data (default: 30000)
-   - **Connection Request Timeout (ms)**: Time to get connection from pool (default: 10000)
-
-   ![][0071]
-
-7. Click **Save**. 
-   
-   **Important:** All three required properties (Cloud Name, API Key, API Secret) must be set for the provider to start.
-   
-   The system will automatically:
-   - Validate the configuration
-   - Start the Cloudinary provider if configuration is complete
-   - Create the EDP mount point at the specified path
-
-#### Cache Configuration (Optional)
-
-You can also configure the cache behavior for Cloudinary assets:
-
-1. In the OSGI Configuration page, look for `Cloudinary Cache` or filter by PID `org.jahia.se.modules.dam.cloudinary.cache.config` and click on it.
-
-2. Adjust the cache settings if needed:
-   - **EDP Cache name**: Name of the Ehcache instance (default: `cacheCloudinary`)
-   - **EDP Cache TTL**: Time To Live in seconds - how long entries stay in cache (default: 28800s = 8h)
-   - **EDP Cache TTI**: Time To Idle in seconds - entries are removed if not accessed (default: 3600s = 1h)
-
-3. Click **Save**.
-
-> **Note:** The cache configuration affects performance:
-> - Higher TTL means fewer API calls to Cloudinary but potentially stale data
-> - Lower TTL means more up-to-date data but more API calls
-> - The TTI helps remove unused entries to save memory
-
-#### Verify Installation
-
-8. Verify the provider is running by checking that `cloudinary` appears in the list of External Data Providers in jContent.
-
-   ![][031]
-
-9. You're all set! You can now:
-   - Add Cloudinary assets in CKEditor
-   - Create Cloudinary Asset content references
-   - Use crop and resize capabilities for images
-
-> **Troubleshooting:** If the provider doesn't start, check the Jahia logs for configuration errors. Common issues include:
-> - Missing required properties (cloudName, apiKey, apiSecret)
-> - Invalid credentials
-> - Network connectivity issues with Cloudinary API
-
-## Module details
-
-### Architecture Overview
-
-The module is built with a modern OSGI architecture:
-
-1. **CloudinaryProviderConfig**: OSGI configuration interface with `@AttributeDefinition` annotations
-2. **CloudinaryProviderService**: Service interface exposing the configuration
-3. **CloudinaryProviderServiceImpl**: Service implementation managing lifecycle and mount point
-4. **CloudinaryMountPointService**: Manages the EDP mount/unmount operations
-5. **CloudinaryDataSource**: EDP implementation handling asset queries and URL transformations
-6. **CloudinaryDecorator**: JCR node decorator providing dynamic URL generation
-7. **CloudinaryCacheManager**: Caching layer using Ehcache for performance optimization
-
-### Data flow
-
-![][010]
-
-The data flow includes the following steps:
-
-1. **Content Creation**: From a website page, the user creates or updates a `Cloudinary Content Reference`.
-   The React application `Cloudinary Content Picker` is launched, displaying a placeholder.
-
-   ![][002]
-
-2. **Asset Selection**: When the user clicks the **Cloudinary Content** field, the Cloudinary Media Library web application launches in a modal.
-   Users can:
-   - Browse and search Cloudinary assets
-   - Crop images using the built-in crop tool
-   - Resize images with aspect ratio support
-   - Preview transformations in real-time
-
-   > Learn more about the [Media Library][cloudinary:MediaLib].
-
-3. **Asset Information Retrieval**: When a user selects an asset, the picker:
-   - Receives the asset's `public_id` from the Media Library
-   - Uses the Cloudinary Admin API (via proxy) to get the permanent `asset_id`
-   - Encodes transformation parameters (crop, resize) in base36 format for JCR compatibility
-
-   > The proxy uses the Cloudinary [Admin API][cloudinary:AdminAPI].
-
-4. **Node Creation**: The picker creates a content path using:
-   - Static base: `/sites/systemsite/contents/dam-cloudinary`
-   - Asset ID and encoded transformation parameters
-   
-   A GraphQL call creates the JCR node via the `Cloudinary Asset Provider`.
-
-5. **Asset Metadata Retrieval**: If the asset is not cached, the provider:
-   - Calls the Cloudinary Admin API
-   - Retrieves asset metadata (dimensions, format, resource type, etc.)
-   - Stores transformation parameters in node properties
-
-   > Uses the Cloudinary [Admin API][cloudinary:AdminAPI].
-
-6. **Caching**: The JSON response is mapped to a Jahia node and cached in `cacheCloudinary`.
-   - Default TTL: 8 hours
-   - Idle timeout: 1 hour
-   - Transformed URLs are cached separately for performance
-
-7. **Content Rendering**: The provider returns a reference node that can be saved and used in pages.
-   The module provides jContent views for different Cloudinary asset types (images, videos, raw files).
-
-8. **URL Generation**: When rendering content:
-   - The decorator generates Cloudinary transformation URLs
-   - Supports crop (c_crop), resize (c_fill, c_fit), quality, and format parameters
-   - Uses Cloudinary CDN for optimal performance and analytics
-
-The complete flow:
-
-![][003]
-
-### Image Transformations
-
-The module supports advanced image transformations through Cloudinary's URL-based API:
-
-#### Crop Transformations
-When a user crops an image in the picker, the following parameters are encoded:
-- `x`, `y`: Crop starting coordinates
-- `cw`, `ch`: Crop width and height
-- `ar`: Aspect ratio (e.g., "16_9", "4_3", "1_1")
-
-Example: `/c_crop,x_100,y_50,w_800,h_600,ar_16:9/`
-
-#### Resize Transformations
-Resize operations support various modes:
-- `c_fill`: Fill specified dimensions, may crop
-- `c_fit`: Fit within dimensions, preserves aspect ratio
-- `c_scale`: Scale to exact dimensions
-- `c_limit`: Limit maximum dimensions
-
-Parameters:
-- `w`: Width
-- `h`: Height
-- `c`: Crop/resize mode
-- `g`: Gravity for positioning (auto, center, north, etc.)
-
-Example: `/c_fill,w_800,h_600,g_auto/`
-
-#### Parameter Shortcuts
-The module supports both long and short parameter names:
-- `width:` or `w:`
-- `height:` or `h:`
-- `crop:` or `c:`
-- `gravity:` or `g:`
-
-### URL Encoding
-
-Transformation parameters are encoded in base36 format to ensure JCR path compatibility:
-
-**Why base36?**
-- JCR restricts certain characters in node names (`:` is treated as namespace prefix)
-- Base36 uses only alphanumeric characters (0-9, a-z)
-- Compact representation suitable for URLs
-
-**Encoding format:**
+### 3.1 Architecture (Simplified)
 ```
-{width}w{height}h{crop}c{gravity}g{aspectRatio}ar
+React Picker → Provider Service + DataSource (EDP) → Cache (Ehcache) → JCR Decorator → Cloudinary CDN
 ```
 
-**Example:**
+Core Java Components:
+- [`CloudinaryProviderConfig`][CloudinaryProviderConfig]  (OSGI @ObjectClassDefinition)
+- [`CloudinaryProviderService`][CloudinaryProviderService] / Impl (lifecycle + validation)
+- [`CloudinaryMountPointService`][CloudinaryMountPointService] (EDP mount management)
+- [`CloudinaryDataSource`][CloudinaryDataSource] (fetch, mapping, transform decoding)
+- [`CloudinaryDecorator`][CloudinaryDecorator] (URL assembly)
+- [`CloudinaryCacheManager`][CloudinaryCacheManager] (TTL / TTI metadata & derived URLs)
+
+### 3.2 Functional Flow
+1. User selects an asset in the React picker (widget returns cloudinary `id`)
+2. The picker builds a JCR path (optional base36-encoded transformation suffix)
+3. A GraphQL mutation triggers creation or retrieval of the external node (EDP)
+4. CloudinaryDataSource queries Cloudinary’s Search API
+5. Metadata is mapped to a CloudinaryAsset and cached
+6. Base36 transformation segment (if any) is decoded and stored as `cloudy:derivedTransformation`
+7. Subsequent accesses served from cache until TTL/TTI eviction
+8. CloudinaryDecorator assembles final delivery URL (with transformations if any)
+
+### 3.3 Transformation Encoding
+Path format: `/assetId` or `/assetId_base36params`  
+Example raw transformation: `c_crop,w_800,h_600,g_auto` → encoded into a compact base36 sequence.  
+Decoded server-side → stored in property `cloudy:derivedTransformation`.
+
+Supported (long & short) param keys when building dynamic URLs:
+- `width:` / `w:`
+- `height:` / `h:`
+- `crop:` / `c:`
+- `gravity:` / `g:`
+
+In your jsp code, you provide these params to the node.getUrl() method, e.g.:
+```jsp
+//short version
+<c:set var="imageURL" value="${imageNode.getUrl(['w:400','h:300','g:auto'])}"/>
+
+//long version
+<c:set var="imageURL" value="${imageNode.getUrl(['width:400','height:300','gravity:auto'])}"/>
 ```
-Original: w=800, h=600, c=fill, ar=16:9
-Encoded:  m0w6ighcfillgar16_9
+In your jsx code, you provide these params to the buildNodeUrl() method, e.g.:
+```jsx
+const url = buildNodeUrl(imageNode,{args: {width:400, height:300, gravity:'auto'}});
 ```
 
-The aspect ratio separator `:` is replaced with `_` for JCR compatibility.
+### 3.4 Caching Strategy
+Two layers:
+1. Asset Metadata (`assetId`) → avoids repeated Admin API calls
+2. Derived URLs (`assetId + transformHash`) → avoids recomputing repeated transforms
 
-### Caching Strategy
+Configurable TTL (total lifetime) + TTI (idle eviction). Eviction policy: typically LFU (as configured via Ehcache).
 
-The module implements a two-level caching strategy managed by `CloudinaryCacheManager`:
+### 3.5 Security
+- `apiSecret` is only used server-side
+- `apiKey` is also exposed client-side to initialize the Cloudinary widget
+- All backend API calls use HTTPS with Basic Auth
+- No secret appears in delivery URLs
+- Timeouts are configurable to prevent hanging requests
 
-#### Configuration
+### 3.6 Performance
+- Lazy loading (no prefetch of entire library)
+- `f_auto` + CDN ensures best format per browser
+- Cache reduces latency for repeated assets
+- Decorator only applies transformations when needed
 
-The cache behavior is configurable via OSGI configuration (`org.jahia.se.modules.dam.cloudinary.cache.config`):
+### 3.7 JCR Types (see [`definitions.cnd`][definitions.cnd])
+Mixin: `cloudymix:cloudyAsset` shared properties (excerpt):
+- `cloudy:assetId`
+- `cloudy:folder`
+- `cloudy:format`
+- `cloudy:version`
+- `cloudy:resourceType`
+- `cloudy:type`
+- `cloudy:bytes`
+- `cloudy:width`
+- `cloudy:height`
+- `cloudy:aspectRatio`
+- `cloudy:url`
+- `cloudy:baseUrl`
+- `cloudy:endUrl`
+- `cloudy:status`
+- `cloudy:accessMode`
+- `cloudy:accessControl`
+- `cloudy:derivedTransformation`
+- (plus optional `cloudy:poster`, `cloudy:duration` on specific types)
 
-- **Cache Name**: Name of the Ehcache instance (default: `cacheCloudinary`)
-- **TTL (Time To Live)**: How long entries remain in cache (default: 8 hours / 28800 seconds)
-- **TTI (Time To Idle)**: Entries are removed if not accessed within this time (default: 1 hour / 3600 seconds)
+### 3.8 OSGI Parameters (Summary)
+Provider PID: `org.jahia.se.modules.dam.cloudinary.provider.config`
+- `apiSchema`, `apiEndPoint`, `apiVersion`
+- `apiKey`, `apiSecret`, `cloudName`
+- `applyOnPickers`
+- `edpMountPath`
+- `connectionTimeout`, `socketTimeout`, `connectionRequestTimeout`
 
-#### Cache Levels
+Cache PID: `org.jahia.se.modules.dam.cloudinary.cache.config`
+- `edpCacheName`
+- `edpCacheTtl`
+- `edpCacheTti`
 
-1. **Asset Metadata Cache**:
-   - Caches full asset information from Cloudinary API
-   - Key: asset_id
-   - Reduces API calls to Cloudinary
-   - Configurable TTL and TTI
+---
 
-2. **Transformed URL Cache**:
-   - Caches generated Cloudinary URLs with transformations
-   - Key: asset_id + transformation parameters hash
-   - Prevents redundant URL generation
-   - Improves rendering performance
+## 4. Troubleshooting
 
-#### Cache Invalidation
+| Issue | Likely Cause | Action |
+|-------|--------------|--------|
+| Provider not visible | Missing credentials | Fill `cloudName`, `apiKey`, `apiSecret` |
+| Asset not found | Invalid `asset_id` / expired cache | Re-select or reduce TTL |
+| Transform ignored | Invalid syntax | Check `c_`, `w_`, `h_`, `g_` formatting |
+| API timeouts | Network latency | Increase timeouts in OSGI config |
+| Stale data | TTL too high | Lower `edpCacheTtl` |
 
-The cache automatically:
-- Removes entries after TTL expires (default: 8 hours)
-- Removes idle entries after TTI expires (default: 1 hour)
-- Can be manually flushed via the cache manager
-- Is recreated when configuration changes
+Check logs for classes: [`CloudinaryDataSource`][CloudinaryDataSource], [`CloudinaryProviderServiceImpl`][CloudinaryProviderServiceImpl].
 
-Both caches use Ehcache with LFU (Least Frequently Used) eviction policy for optimal memory management.
+---
 
-[031]: ./doc/images/031_install_completed.png
+## 5. Build from Source
+```bash
+mvn clean install
+```
+Deploy the generated JAR (in `target/`) through Jahia Module Manager.
 
-[010]: ./doc/images/CloudyArchi.gif
-[002]: ./doc/images/CloudyContentRef.png
-[003]: ./doc/images/CloudyDemo.gif
+---
 
-[0070]: ./doc/images/0070_OSGIConfig.png
-[0071]: ./doc/images/0071_OSGIConfig.png
-[0072]: ./doc/images/0072_OSGIConfig.png
-[201]: ./doc/images/201_modules_download_icon.png
+## 6. Resources
+- Cloudinary Admin API: https://cloudinary.com/documentation/admin_api
+- Transformation Reference: https://cloudinary.com/documentation/transformation_reference
+- Media Library Widget: https://cloudinary.com/documentation/media_library_widget
+- Jahia External Data Provider (EDP): Jahia developer docs
+- CDN & Optimization: Cloudinary documentation
 
-[mount.cfg]: ./src/main/resources/META-INF/configurations/org.jahia.se.modules.dam.cloudinary.provider.config.cfg
-[definition.cnd]: ./src/main/resources/META-INF/definitions.cnd
-[react:index.js]: ./src/javascript/CloudinaryPicker/CloudinaryPicker.jsx
-[CloudinaryDataSource.java]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/edp/CloudinaryDataSource.java
-[CloudinaryDecorator.java]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/edp/CloudinaryDecorator.java
-[CloudinaryProxyServlet.java]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/CloudinaryProxyServlet.java
-[CloudinaryProviderService]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/service/CloudinaryProviderService.java
-[CloudinaryCacheManager]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/edp/CloudinaryCacheManager.java
-[cloudinary:AdminAPI]: https://cloudinary.com/documentation/admin_api
-[cloudinary:MediaLib]: https://cloudinary.com/documentation/media_library_widget
+---
+
+## 7. License / Support
+Check the [licence]
+
+---
+
+[CloudinaryProviderConfig]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/provider/CloudinaryProviderConfig.java
+[CloudinaryProviderService]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/provider/CloudinaryProviderService.java
+[CloudinaryMountPointService]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/provider/CloudinaryMountPointService.java
+[CloudinaryDataSource]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/provider/CloudinaryDataSource.java
+[CloudinaryDecorator]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/provider/CloudinaryDecorator.java
+[CloudinaryCacheManager]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/provider/CloudinaryCacheManager.java
+[CloudinaryProviderServiceImpl]: ./src/main/java/org/jahia/se/modules/dam/cloudinary/provider/CloudinaryProviderServiceImpl.java
+[definitions.cnd]: ./src/main/resources/META-INF/jahia/definition.cnd
+[licence]: ./LICENSE.md
