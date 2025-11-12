@@ -19,9 +19,9 @@ export default function () {
             const config = window.contextJsParameters.config?.cloudinary;
             registry.add('externalPickerConfiguration', 'cloudinary', {
                 requireModuleInstalledOnSite: 'cloudinary-picker',
-                pickerConfigs: config.applyOnPickers ? config.applyOnPickers.split(',').map(item => item.trim()) : ['image', 'file'],
+                pickerConfigs: config?.applyOnPickers ? config.applyOnPickers.split(',').map(item => item.trim()) : ['image', 'file'],
                 selectableTypes: ['cloudymix:cloudyAsset'],
-                keyUrlPath: 'cloudinary',
+                keyUrlPath: config?.keyUrlPattern || 'cloudinary',
                 pickerInput: {
                     emptyLabel: 'cloudinary-picker:label.referenceCard.emptyLabel',
                     emptyIcon: svgCloudyLogo

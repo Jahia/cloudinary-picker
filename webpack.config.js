@@ -6,6 +6,15 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 const getModuleFederationConfig = require('@jahia/webpack-config/getModuleFederationConfig');
 const packageJson = require('./package.json');
+const {CycloneDxWebpackPlugin} = require('@cyclonedx/webpack-plugin');
+
+/** @type {import('@cyclonedx/webpack-plugin').CycloneDxWebpackPluginOptions} */
+const cycloneDxWebpackPluginOptions = {
+  specVersion: '1.4',
+  rootComponentType: 'library',
+  outputLocation: './bom',
+  validateResults: false
+};
 
 module.exports = (env, argv) => {
     let _argv = argv || {};
@@ -102,7 +111,8 @@ module.exports = (env, argv) => {
                     to: ''
                 }]
             }),
-            new CaseSensitivePathsPlugin()
+            new CaseSensitivePathsPlugin(),
+            new CycloneDxWebpackPlugin(cycloneDxWebpackPluginOptions)
         ],
         mode: 'development'
     };

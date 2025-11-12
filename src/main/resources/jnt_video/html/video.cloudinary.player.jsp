@@ -6,7 +6,7 @@
 <%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions"%>
 
 
-<c:set var="cloudName" value="${functions:getConfigValue('org.jahia.se.modules.cloudinary_picker_credentials','cloudinary_provider.cloudName')}"/>
+<c:set var="cloudName" value="${functions:getConfigValue('org.jahia.se.modules.dam.cloudinary.provider.config','cloudName')}"/>
 <c:set var="cloudyNode" value="${currentNode.properties['source'].node}"/>
 <c:set var="publicId" value="${cloudyNode.properties['cloudy:publicId'].string}"/>
 

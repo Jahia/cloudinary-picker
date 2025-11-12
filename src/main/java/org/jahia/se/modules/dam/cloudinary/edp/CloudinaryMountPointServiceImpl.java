@@ -4,7 +4,7 @@ import org.jahia.exceptions.JahiaInitializationException;
 import org.jahia.modules.external.ExternalContentStoreProvider;
 import org.jahia.modules.external.ExternalProviderInitializerService;
 import org.jahia.se.modules.dam.cloudinary.service.CloudinaryMountPointService;
-import org.jahia.se.modules.dam.cloudinary.service.CloudinaryProviderConfig;
+import org.jahia.se.modules.dam.cloudinary.service.CloudinaryProviderService;
 import org.jahia.services.content.JCRSessionFactory;
 import org.jahia.services.content.JCRStoreService;
 import org.jahia.services.sites.JahiaSitesService;
@@ -26,6 +26,7 @@ public class CloudinaryMountPointServiceImpl implements CloudinaryMountPointServ
     private static final Logger logger = LoggerFactory.getLogger(CloudinaryDataSource.class);
 
     private ExternalContentStoreProvider cloudinaryProvider;
+    private CloudinaryDataSource cloudinaryDataSource;
 
     // Core deps
     private JahiaUserManagerService userManagerService;
@@ -76,7 +77,7 @@ public class CloudinaryMountPointServiceImpl implements CloudinaryMountPointServ
     }
 
     @Override
-    public void start(CloudinaryProviderConfig cloudinaryProviderConfig) throws JahiaInitializationException {
+    public void start(CloudinaryProviderService cloudinaryProviderService) throws JahiaInitializationException {
         logger.info("Starting Cloudinary mount point service");
         cloudinaryProvider = new ExternalContentStoreProvider();
         cloudinaryProvider.setUserManagerService(userManagerService);
@@ -86,9 +87,10 @@ public class CloudinaryMountPointServiceImpl implements CloudinaryMountPointServ
         cloudinaryProvider.setSessionFactory(sessionFactory);
         cloudinaryProvider.setExternalProviderInitializerService(externalProviderInitializerService);
 
-        cloudinaryProvider.setDataSource(new CloudinaryDataSource(cloudinaryProviderConfig, cloudinaryCacheManager));
+        cloudinaryDataSource = new CloudinaryDataSource(cloudinaryProviderService, cloudinaryCacheManager);
+        cloudinaryProvider.setDataSource(cloudinaryDataSource);
         cloudinaryProvider.setDynamicallyMounted(false);
-        cloudinaryProvider.setMountPoint("/sites/systemsite/contents/dam-cloudinary");
+        cloudinaryProvider.setMountPoint(cloudinaryProviderService.getConfig().edpMountPath());
         cloudinaryProvider.setKey("cloudinary");
         cloudinaryProvider.start();
         logger.info("Cloudinary mount point service started");
@@ -100,6 +102,12 @@ public class CloudinaryMountPointServiceImpl implements CloudinaryMountPointServ
             logger.info("Stopping Cloudinary mount point service");
             cloudinaryProvider.stop();
             cloudinaryProvider = null;
+
+            // Clean up HTTP client resources
+            if (cloudinaryDataSource != null) {
+                cloudinaryDataSource.destroy();
+                cloudinaryDataSource = null;
+            }
             logger.info("Cloudinary mount point service stopped");
         }
     }

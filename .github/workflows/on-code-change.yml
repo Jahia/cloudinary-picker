@@ -1,4 +1,4 @@
-# This workflow is triggered every time a change is pushed to any branches 
+# This workflow is triggered every time a change is pushed to any branches
 # Github actions command reference: https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions
 
 name: On Code Change (PR)
@@ -28,7 +28,7 @@ jobs:
       - uses: Jahia/jahia-modules-action/static-analysis@v2
         with:
           skip_lint_modules: true
-          node_version: 18
+          node_version: 22
           auditci_level: critical
 
   build:
@@ -60,3 +60,5 @@ jobs:
           github_pr_id: ${{github.event.number}}
           sonar_url: ${{ secrets.SONAR_URL }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
+          nexus_username: ${{ secrets.NEXUS_USERNAME }}
+          nexus_password: ${{ secrets.NEXUS_PASSWORD }}

@@ -9,10 +9,10 @@ public interface CloudinaryMountPointService {
     /**
      * Start and mount the cloudinary EDP implementation
      *
-     * @param cloudinaryProviderConfig the config
+     * @param cloudinaryProviderService the provider service
      * @throws JahiaInitializationException
      */
-    void start(CloudinaryProviderConfig cloudinaryProviderConfig) throws JahiaInitializationException;
+    void start(CloudinaryProviderService cloudinaryProviderService) throws JahiaInitializationException;
 
     /**
      * Stop and unmount the cloudinary EDP implementation
