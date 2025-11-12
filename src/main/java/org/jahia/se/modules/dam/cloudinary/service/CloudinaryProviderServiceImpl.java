@@ -91,7 +91,8 @@ public class CloudinaryProviderServiceImpl implements CloudinaryProviderService 
                 StringUtils.isNotEmpty(config.apiVersion()) &&
                 StringUtils.isNotEmpty(config.apiKey()) &&
                 StringUtils.isNotEmpty(config.apiSecret()) &&
-                StringUtils.isNotEmpty(config.cloudName());
+                StringUtils.isNotEmpty(config.cloudName()) &&
+                StringUtils.isNotEmpty(config.edpMountPath());
     }
 
     @Override
@@ -108,6 +109,7 @@ public class CloudinaryProviderServiceImpl implements CloudinaryProviderService 
             digest.update(config.apiKey().getBytes(StandardCharsets.UTF_8));
             digest.update(config.apiSecret().getBytes(StandardCharsets.UTF_8));
             digest.update(config.cloudName().getBytes(StandardCharsets.UTF_8));
+            digest.update(config.edpMountPath().getBytes(StandardCharsets.UTF_8));
             byte[] hashBytes = digest.digest();
             return Base64.getEncoder().encodeToString(hashBytes);
         } catch (NoSuchAlgorithmException e) {

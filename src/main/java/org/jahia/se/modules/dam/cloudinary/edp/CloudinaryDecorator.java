@@ -8,6 +8,8 @@ import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.jahia.se.modules.dam.cloudinary.Constants.CONTENT_TYPE_IMAGE;
+
 /**
  * JCR Node Decorator for Cloudinary assets.
  *
@@ -51,16 +53,28 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
     /**
      * Builds a Cloudinary URL with optional transformations.
      *
-     * Priority order:
+     * Only applies transformations to images (cloudynt:image).
+     * For other content types (videos, raw files), returns the direct URL.
+     *
+     * Priority order for images:
      * 1. Derived transformations (from picker selection with crops/edits)
      * 2. Dynamic parameters (from template render calls)
      * 3. No transformations (original asset)
      *
      * @param params Optional list of transformation parameters
-     * @return Full Cloudinary URL with transformations
+     * @return Full Cloudinary URL with or without transformations
      */
     private String buildCloudinaryUrl(List<String> params) {
         try {
+            // For non-image content types, return the direct URL
+            if (!this.isNodeType(CONTENT_TYPE_IMAGE)) {
+                if (node.hasProperty("cloudy:url")) {
+                    return node.getProperty("cloudy:url").getString();
+                }
+                return super.getUrl();
+            }
+
+            // For images, build URL with transformations
             String baseUrl = node.getProperty("cloudy:baseUrl").getString();
             String endUrl = node.getProperty("cloudy:endUrl").getString();
 

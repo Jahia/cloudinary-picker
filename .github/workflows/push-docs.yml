@@ -1,0 +1,20 @@
+# .github/workflows/push-docs.yml
+name: Push Docs to the Academy
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  push-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - uses: Jahia/github-to-academy@v1
+        with:
+          files: docs/**/*.md
+          graphql-endpoint: ${{ secrets.ACADEMY_ENDPOINT }}
+          graphql-authorization: ${{ secrets.ACADEMY_AUTHORIZATION }}
