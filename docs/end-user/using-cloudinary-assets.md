@@ -26,7 +26,7 @@ Before using Cloudinary assets, verify you have compatible versions:
 - **Jahia:** 8.2.0.0+
 - **jContent:** 3.5.0+ (for thumbnail display - upcoming version)
 - **CKEditor:** CKEditor 4 only (CKE5 support coming in module v1.1.0)
-- **JavaScript Modules Library:** 1.0.2+ (for React/JSX rendering - upcoming version)
+- **JavaScript Modules Library:** 1.1.0+ (for React/JSX rendering - upcoming version)
 - **Cloudinary Module:** 4.0.0+ (current version supports crop & resize for images in weak reference fields)
 
 See [Known Limitations][admin-guide] in the Administrator Guide for details.
