@@ -230,9 +230,9 @@ The module uses caching to optimize performance and reduce API calls to Cloudina
 - **Impact:** Cannot insert Cloudinary assets into CKE5 rich text fields
 
 **JavaScript Modules (NPM)**
-- Not compatible with `@jahia/javascript-modules-library` versions prior to **1.0.2**
-- **Required version:** 1.0.2+
-- **Expected release:** Upcoming version 1.0.2
+- Not compatible with `@jahia/javascript-modules-library` versions prior to **1.1.0**
+- **Required version:** 1.1.0+
+- **Expected release:** Upcoming version 1.1.0
 - **Impact:** React/JSX rendering may fail with older versions
 
 ### Functional Limitations
