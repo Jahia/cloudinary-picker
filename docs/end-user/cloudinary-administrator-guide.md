@@ -6,7 +6,6 @@ page:
 content:
   $subpath: document-area/content
 ---
-# Installing and Configuring the Cloudinary Picker Module
 
 This guide explains how to install and configure the Cloudinary Content Picker module in Jahia.
 
