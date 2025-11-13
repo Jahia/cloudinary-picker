@@ -6,7 +6,6 @@ page:
 content:
   $subpath: document-area/content
 ---
-# Using Cloudinary Assets in Jahia
 
 This guide explains how to select and display media assets from your Cloudinary Digital Asset Management (DAM) system within Jahia content.
 
