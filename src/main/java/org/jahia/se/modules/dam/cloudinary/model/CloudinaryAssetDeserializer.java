@@ -67,11 +67,24 @@ public class CloudinaryAssetDeserializer extends StdDeserializer<CloudinaryAsset
         String url = cloudinaryNode.get("secure_url").textValue();
         Urls urls = new Urls(url);
 
+        // Handle both Cloudinary configuration modes:
+        // - Static folder mode: uses "folder" property
+        // - Dynamic folder mode: uses "asset_folder" property
+        String folder = cloudinaryNode.has("folder")
+                ? cloudinaryNode.get("folder").textValue()
+                : (cloudinaryNode.has("asset_folder") ? cloudinaryNode.get("asset_folder").textValue() : "");
+
+
+        // Use display_name if available (dynamic mode), otherwise use filename
+        String title = cloudinaryNode.has("display_name")
+                ? cloudinaryNode.get("display_name").textValue()
+                : cloudinaryNode.get("filename").textValue();
+
         cloudinaryAsset.setId(cloudinaryNode.get("asset_id").textValue());
         cloudinaryAsset.addProperty("cloudy:assetId", cloudinaryNode.get("asset_id").textValue());
         cloudinaryAsset.addProperty("cloudy:publicId", cloudinaryNode.get("public_id").textValue());
-        cloudinaryAsset.addProperty("cloudy:folder", cloudinaryNode.get("folder").textValue());
-        cloudinaryAsset.addProperty("jcr:title", cloudinaryNode.get("filename").textValue());
+        cloudinaryAsset.addProperty("cloudy:folder", folder);
+        cloudinaryAsset.addProperty("jcr:title", title);
         cloudinaryAsset.addProperty("cloudy:format", format);
         cloudinaryAsset.addProperty("cloudy:version", cloudinaryNode.get("version").longValue());
         cloudinaryAsset.addProperty("cloudy:resourceType", resourceType);
