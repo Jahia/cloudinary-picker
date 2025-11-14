@@ -102,7 +102,7 @@ public class CloudinaryMountPointServiceImpl implements CloudinaryMountPointServ
             logger.info("Stopping Cloudinary mount point service");
             cloudinaryProvider.stop();
             cloudinaryProvider = null;
-
+            
             // Clean up HTTP client resources
             if (cloudinaryDataSource != null) {
                 cloudinaryDataSource.destroy();

@@ -127,16 +127,7 @@ You can add Cloudinary videos to pages in multiple ways:
 5. Choose your video
 6. Click **"Insert"** and **"Save"**
 
-**Option 2: Video in CKEditor (Rich Text)**
-
-1. **Click inside a rich text field** (e.g., article body)
-2. **Click the "Video" or "Media" icon** in the CKEditor toolbar
-3. Select **"Cloudinary"** as the source
-4. Browse and select your video
-5. Configure display settings (width, height, controls)
-6. **Insert the video**
-
-**Option 3: Video via Weak Reference in Custom Content**
+**Option 2: Video via Weak Reference in Custom Content**
 
 For custom content types (e.g., Article with video field):
 
