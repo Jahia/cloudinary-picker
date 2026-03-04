@@ -23,10 +23,10 @@ This guide explains how to select and display media assets from your Cloudinary 
 **Version Requirements:**  
 Before using Cloudinary assets, verify you have compatible versions:
 - **Jahia:** 8.2.0.0+
-- **jContent:** 3.5.0+ (for thumbnail display - upcoming version)
+- **jContent:** 3.4.1+
 - **CKEditor:** CKEditor 4 only (CKE5 support coming in module v1.1.0)
-- **JavaScript Modules Library:** 1.1.0+ (for React/JSX rendering - upcoming version)
-- **Cloudinary Module:** 4.0.0+ (current version supports crop & resize for images in weak reference fields)
+- **JavaScript Modules Library:** 1.1.0+
+- **Cloudinary Module:** 4.0.0+
 
 See [Known Limitations][admin-guide] in the Administrator Guide for details.
 :::
