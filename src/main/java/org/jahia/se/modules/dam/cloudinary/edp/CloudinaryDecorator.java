@@ -165,6 +165,27 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
     }
 
     /**
+     * Checks if a child node exists with the given name.
+     *
+     * This override was added to fix GraphQL queries using `thumbnailUrl(name: "thumbnail2", checkIfExists:true)`,
+     * which was introduced in jContent 3.4.1 for displaying thumbnails in the UI.
+     *
+     * Without this method, GraphQL queries with checkIfExists would fail because the thumbnail nodes
+     * don't actually exist as physical child nodes - they are virtual URLs generated on demand.
+     *
+     * @param s The node name to check ("thumbnail", "thumbnail2", or other)
+     * @return true if the name is "thumbnail" or "thumbnail2", otherwise delegates to parent implementation
+     * @throws RepositoryException If checking for node existence fails
+     * @since 4.2.0
+     */
+    @Override
+    public boolean hasNode(String s) throws RepositoryException {
+        if ("thumbnail".equals(s) || "thumbnail2".equals(s)) {
+            return true;
+        }
+        return super.hasNode(s);
+    }
+    /**
      * Generates thumbnail URL with automatic optimizations.
      *
      * Thumbnail types:
