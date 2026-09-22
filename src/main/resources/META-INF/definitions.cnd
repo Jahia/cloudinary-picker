@@ -38,6 +38,9 @@
  - cloudy:duration (double)
  - cloudy:poster (string) fulltextsearchable=no
 
+[cloudynt:model3d] > jnt:file, cloudymix:cloudyAsset
+ - cloudy:poster (string) fulltextsearchable=no
+
 
 //[cloudymix:imageMediaSettings] mixin
 // extends = cloudynt:cloudyReference

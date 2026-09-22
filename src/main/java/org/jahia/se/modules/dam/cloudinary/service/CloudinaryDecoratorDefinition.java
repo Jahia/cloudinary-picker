@@ -18,6 +18,7 @@ public class CloudinaryDecoratorDefinition extends JCRNodeDecoratorDefinition {
         decorators.put(CONTENT_TYPE_DOC, CloudinaryDecorator.class);
         decorators.put(CONTENT_TYPE_PDF, CloudinaryDecorator.class);
         decorators.put(CONTENT_TYPE_VIDEO, CloudinaryDecorator.class);
+        decorators.put(CONTENT_TYPE_MODEL3D, CloudinaryDecorator.class);
     }
 
     @Override

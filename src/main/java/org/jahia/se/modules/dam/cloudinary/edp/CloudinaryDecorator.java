@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.jahia.se.modules.dam.cloudinary.Constants.CONTENT_TYPE_IMAGE;
+import static org.jahia.se.modules.dam.cloudinary.Constants.CONTENT_TYPE_MODEL3D;
 
 /**
  * JCR Node Decorator for Cloudinary assets.
@@ -22,6 +23,20 @@ import static org.jahia.se.modules.dam.cloudinary.Constants.CONTENT_TYPE_IMAGE;
  * Example: https://res.cloudinary.com/demo/image/upload/c_crop,w_200/v123/sample.jpg
  */
 public class CloudinaryDecorator extends JCRNodeDecorator {
+
+    /**
+     * Turns a 3D model into a square picture, ahead of the thumbnail resize.
+     *
+     * A 3D model only renders as a picture through the camera effect; without it Cloudinary still
+     * answers with an image, but an unlit, near-black one. The camera renders into a fixed 640x640
+     * frame the model rarely fills, hence e_trim, which drops the transparent margin whatever the
+     * model's shape, where a fixed zoom would crop one shaped differently. Trimming leaves the
+     * picture as tall or as wide as the model, so it is padded back to a square: a viewer that
+     * crops a thumbnail to a square, the Content Editor's reference card for one, would otherwise
+     * cut into the model. The model is scaled below the canvas to keep a margin around it.
+     */
+    private static final String MODEL_3D_RENDER =
+            "/e_camera/e_trim/c_limit,w_340,h_340/c_lpad,w_400,h_400,b_transparent";
 
     private final String THUMBNAIL_SIZE = "150";
     private final String THUMBNAIL2_SIZE = "350";
@@ -216,10 +231,16 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
             StringBuilder sb = new StringBuilder();
             sb.append(node.getProperty("cloudy:baseUrl").getString());
 
+            if (this.isNodeType(CONTENT_TYPE_MODEL3D)) {
+                sb.append(MODEL_3D_RENDER);
+            }
+
+            sb.append("/f_auto");
+
             // Use c_limit with both w and h set to the same value
             // This ensures the largest dimension is resized to the specified size
             // while maintaining aspect ratio
-            sb.append("/f_auto,c_limit,w_").append(size).append(",h_").append(size).append("/");
+            sb.append(",c_limit,w_").append(size).append(",h_").append(size).append("/");
 
             // Use poster image for videos, or main image for other types
             if (node.hasProperty("cloudy:poster")) {
