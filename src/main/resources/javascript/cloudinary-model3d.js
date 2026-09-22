@@ -1,9 +1,13 @@
 /**
  * Renders every Cloudinary 3D model on the page with the Product Gallery widget.
  *
- * The view emits one container per node and carries the widget options on it, so this script is
- * loaded once per page whatever the number of models. The container gets its id here rather than
- * from the view, because a node identifier is not necessarily a usable CSS selector.
+ * Cloudinary's own script only exposes the widget's constructor, so an initialisation call is
+ * needed whatever happens; this file is where it lives rather than a script inline in the view.
+ * The view emits one container per node and carries the widget options on it as data attributes,
+ * so this script is loaded once per page whatever the number of models, and the public id reaches
+ * the widget through markup the view escapes rather than through a JavaScript string it would have
+ * to escape for another context. The container gets its id here rather than from the view, because
+ * a node identifier is not necessarily a usable CSS selector.
  */
 (function () {
     'use strict';
