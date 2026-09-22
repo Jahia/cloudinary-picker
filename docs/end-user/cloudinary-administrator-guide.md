@@ -24,7 +24,7 @@ This guide explains how to install and configure the Cloudinary Content Picker m
 
 ## Overview
 
-The Cloudinary Content Picker module allows you to browse, select, and display media assets from your Cloudinary Digital Asset Management (DAM) system directly within Jahia content. This integration enables you to reference Cloudinary images and videos without duplicating files, keeping your content lightweight and always up-to-date with your DAM.
+The Cloudinary Content Picker module allows you to browse, select, and display media assets from your Cloudinary Digital Asset Management (DAM) system directly within Jahia content. This integration enables you to reference Cloudinary images, videos and 3D models without duplicating files, keeping your content lightweight and always up-to-date with your DAM.
 
 ---
 
@@ -254,6 +254,22 @@ The module uses caching to optimize performance and reduce API calls to Cloudina
 - Only formats supported by Cloudinary are available
 - **Common formats:** MP4, WebM, MOV, AVI
 - **Unsupported:** Proprietary codecs may require conversion in Cloudinary
+
+**3D Models Need a File Picker**
+- A 3D model is not an image, so it never appears in an image picker
+- **Requirement:** `applyOnPickers` must contain `file` for contributors to select 3D models
+- **Note:** Cloudinary stores 3D models under the `image` asset type, but Jahia maps them to their own `cloudynt:model3d` type
+
+**Upgrading Changes the Type of 3D Assets Already Referenced**
+- Before this version, a 3D model came into Jahia as a Cloudinary image, because that is the asset type Cloudinary stores it under
+- After the upgrade, the same asset becomes a `cloudynt:model3d`, which is deliberately not an image, and the change takes effect the first time the asset is read again
+- **Who is affected:** a contributor who picked a 3D model in an image field. That field only accepts images, so the stored reference no longer satisfies it: Content Editor reports the value as invalid, and a view that renders it as an image stops matching
+- **What to do:** move those references to a file field and re-pick the asset. A 3D model picked from now on lands in a file field anyway
+
+**3D Rendering Depends on the Product Gallery**
+- The default 3D view renders with the Cloudinary Product Gallery, which is not part of every Cloudinary plan
+- The Product Gallery only displays GLB; Cloudinary converts another source format on delivery
+- **Workaround:** Use the `viewer` view, which renders without the Product Gallery
 
 **No Batch Operations**
 - Cannot bulk-select or bulk-transform multiple Cloudinary assets at once

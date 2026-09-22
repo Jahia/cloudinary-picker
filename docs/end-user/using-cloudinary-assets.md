@@ -12,7 +12,7 @@ This guide explains how to select and display media assets from your Cloudinary 
 **What you'll learn:**
 - How to select Cloudinary assets in your content
 - How to display Cloudinary assets on your website
-- How to work with images and videos
+- How to work with images, videos and 3D models
 - How to apply transformations
 
 **Prerequisites:**
@@ -282,6 +282,54 @@ jahiaComponent(
 ```
 
 **Note:** Cloudinary automatically handles video format optimization and adaptive streaming when configured.
+
+### Displaying 3D Models
+
+Cloudinary stores a 3D model as an image asset, but Jahia gives it its own content type, `cloudynt:model3d`, so it never lands in an image field. Select a 3D model through a **file** picker, the same way you select a PDF.
+
+A 3D model ships with two views, so you render it with the **module** tag rather than building a URL:
+
+```jsp
+<%@ taglib prefix="template" uri="http://www.jahia.org/tags/templateLib" %>
+
+<c:set var="model" value="${currentNode.properties['model3d'].node}"/>
+
+<c:if test="${not empty model}">
+    <template:module node="${model}"/>
+</c:if>
+```
+
+The default view renders the [Cloudinary Product Gallery](https://cloudinary.com/documentation/product_gallery), which handles rotation, zoom and the augmented-reality handover. When your Cloudinary plan does not carry the Product Gallery, use the `viewer` view instead:
+
+```jsp
+<template:module node="${model}" view="viewer"/>
+```
+
+Both views accept parameters:
+
+```jsp
+<template:module node="${model}">
+    <template:param name="maxWidth" value="1200"/>
+    <template:param name="autoRotate" value="false"/>
+    <template:param name="showAR" value="false"/>
+</template:module>
+```
+
+| Parameter | Views | Default | What it does |
+|---|---|---|---|
+| `maxWidth` | default | `800` | Widest the gallery grows, in pixels. The gallery sizes itself from its container, so an unbounded one fills the page |
+| `aspectRatio` | default | `square` | Shape of the gallery, as the Product Gallery names it: `square`, `4:3`, `16:9` |
+| `autoRotate` | default | `true` | Spins the model on load |
+| `showAR` | default | `true` | Offers the augmented-reality button |
+| `galleryVersion` | default | `1.2.2` | Version of the Product Gallery to load |
+| `minHeight` | `viewer` | `512` | Height of the viewer, in pixels |
+| `viewerVersion` | `viewer` | `4.0.0` | Version of the viewer to load |
+
+**What to expect from each view**
+
+- The default view reads GLB only. Cloudinary converts another source format, such as FBX or OBJ, on delivery.
+- The `viewer` view asks Cloudinary for GLB on the web and USDZ on iOS, so it renders every format Cloudinary can encode.
+- The thumbnail jContent shows for a 3D model is a picture of the model, rendered by Cloudinary from the model itself.
 
 ---
 

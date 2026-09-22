@@ -15,4 +15,5 @@ public interface Constants {
     String CONTENT_TYPE_VIDEO = "cloudynt:video";
     String CONTENT_TYPE_PDF = "cloudynt:pdf";
     String CONTENT_TYPE_DOC = "cloudynt:document";
+    String CONTENT_TYPE_MODEL3D = "cloudynt:model3d";
 }

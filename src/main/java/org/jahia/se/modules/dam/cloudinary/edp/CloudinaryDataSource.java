@@ -194,7 +194,7 @@ public class CloudinaryDataSource implements ExternalDataSource {
 
     @Override
     public Set<String> getSupportedNodeTypes() {
-        return Sets.newHashSet("jnt:folder", CONTENT_TYPE_IMAGE, CONTENT_TYPE_VIDEO, CONTENT_TYPE_PDF, CONTENT_TYPE_DOC, "jnt:resource");
+        return Sets.newHashSet("jnt:folder", CONTENT_TYPE_IMAGE, CONTENT_TYPE_VIDEO, CONTENT_TYPE_PDF, CONTENT_TYPE_DOC, CONTENT_TYPE_MODEL3D, "jnt:resource");
     }
 
     @Override

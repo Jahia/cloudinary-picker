@@ -1,11 +1,11 @@
 # Cloudinary Picker - Cloudinary Content Picker for Jahia
 
 This module provides seamless integration between Jahia 8.2.x+ and Cloudinary DAM,
-allowing contributors to browse, select, and reference Cloudinary media assets (images and videos) directly from jContent.
+allowing contributors to browse, select, and reference Cloudinary media assets (images, videos and 3D models) directly from jContent.
 
 **Key Features:**
 - 🎨 Native jContent picker for Cloudinary assets
-- 🖼️ Support for images and videos
+- 🖼️ Support for images, videos, PDFs and 3D models
 - ⚡ Compact base36 encoding for transformations
 - 🔄 Automatic thumbnail generation with optimization
 - ⏱️ Configurable timeouts to prevent UI blocking
@@ -45,7 +45,7 @@ Learn how to work with Cloudinary assets:
 - Displaying assets in JSP templates
 - Displaying assets in React/JSX templates
 - Retrieving asset URLs via GraphQL
-- Working with images and videos
+- Working with images, videos and 3D models
 - Understanding Cloudinary transformations
 
 👉 **Start here** if you're creating content or developing templates.
