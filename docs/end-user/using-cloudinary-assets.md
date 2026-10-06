@@ -24,7 +24,7 @@ This guide explains how to select and display media assets from your Cloudinary 
 Before using Cloudinary assets, verify you have compatible versions:
 - **Jahia:** 8.2.0.0+
 - **jContent:** 3.4.1+
-- **CKEditor:** CKEditor 4 and CKEditor 5
+- **CKEditor:** CKEditor 4 only
 - **JavaScript Modules Library:** 1.1.0+
 - **Cloudinary Module:** 4.0.0+
 
@@ -86,7 +86,7 @@ Let's add a hero image to a banner component:
 
 ### Using Cloudinary Assets in CKEditor
 
-You can also insert Cloudinary images directly into rich text fields:
+You can also insert Cloudinary images directly into rich text fields that use CKEditor 4:
 
 1. **Click inside a rich text field** (e.g., article body)
 2. **Click the "Image" icon** in the CKEditor toolbar

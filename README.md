@@ -69,7 +69,7 @@ For detailed instructions, see the [Administrator Guide](./docs/end-user/cloudin
 
 - **Jahia:** 8.2.0.0+
 - **jContent:** 3.4.1+ (for thumbnail support)
-- **CKEditor:** CKEditor 4 and CKEditor 5
+- **CKEditor:** CKEditor 4 (CKEditor 5 is not supported yet)
 - **JavaScript Modules Library:** 1.1.0+
 - **Cloudinary Account:** Active account with API access
 - **Java:** 8 or higher
