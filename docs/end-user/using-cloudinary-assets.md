@@ -24,7 +24,7 @@ This guide explains how to select and display media assets from your Cloudinary 
 Before using Cloudinary assets, verify you have compatible versions:
 - **Jahia:** 8.2.0.0+
 - **jContent:** 3.4.1+
-- **CKEditor:** CKEditor 4 only (CKE5 support coming in module v1.1.0)
+- **CKEditor:** CKEditor 4 and CKEditor 5
 - **JavaScript Modules Library:** 1.1.0+
 - **Cloudinary Module:** 4.0.0+
 
@@ -290,6 +290,7 @@ Cloudinary stores a 3D model as an image asset, but Jahia gives it its own conte
 A 3D model ships with two views, so you render it with the **module** tag rather than building a URL:
 
 ```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="template" uri="http://www.jahia.org/tags/templateLib" %>
 
 <c:set var="model" value="${currentNode.properties['model3d'].node}"/>

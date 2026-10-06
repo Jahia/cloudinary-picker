@@ -217,21 +217,13 @@ The module uses caching to optimize performance and reduce API calls to Cloudina
 ### Compatibility Issues
 
 **jContent Thumbnails**
-- Thumbnails may not display correctly in jContent versions prior to **3.5.0**
+- Thumbnails may not display correctly in jContent versions prior to **3.4.1**
 - **Impact:** Assets can still be selected and displayed on pages; only the thumbnail preview is unavailable in the form card view after a Cloudinary asset is selected
-- **Workaround:** No workaround available, update to 3.5.0 is required
-- **Fixed in:** 3.5.0 (release pending)
-
-**CKEditor 5 Support**
-- The Cloudinary picker is **not compatible** with CKEditor 5 (CKE5) until the upcoming **module version 1.1.0**
-- **Current support:** CKEditor 4 only
-- **Expected release:** Version 1.1.0
-- **Impact:** Cannot insert Cloudinary assets into CKE5 rich text fields
+- **Workaround:** No workaround available, update to 3.4.1 or later is required
 
 **JavaScript Modules (NPM)**
 - Not compatible with `@jahia/javascript-modules-library` versions prior to **1.1.0**
 - **Required version:** 1.1.0+
-- **Expected release:** Upcoming version 1.1.0
 - **Impact:** React/JSX rendering may fail with older versions
 
 ### Functional Limitations
