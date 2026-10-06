@@ -188,18 +188,23 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
      * Without this method, GraphQL queries with checkIfExists would fail because the thumbnail nodes
      * don't actually exist as physical child nodes - they are virtual URLs generated on demand.
      *
+     * Only an asset Cloudinary can render as a picture has a thumbnail: an image, or an asset with a
+     * poster (video, PDF, 3D model). Cloudinary answers a raw asset's thumbnail URL with the file
+     * itself, so a raw document reports none and keeps its file-type icon.
+     *
      * @param s The node name to check ("thumbnail", "thumbnail2", or other)
-     * @return true if the name is "thumbnail" or "thumbnail2", otherwise delegates to parent implementation
+     * @return for "thumbnail" or "thumbnail2", whether the asset has a thumbnail, otherwise delegates to parent implementation
      * @throws RepositoryException If checking for node existence fails
      * @since 4.2.0
      */
     @Override
     public boolean hasNode(String s) throws RepositoryException {
         if ("thumbnail".equals(s) || "thumbnail2".equals(s)) {
-            return true;
+            return this.isNodeType(CONTENT_TYPE_IMAGE) || node.hasProperty("cloudy:poster");
         }
         return super.hasNode(s);
     }
+
     /**
      * Generates thumbnail URL with automatic optimizations.
      *
