@@ -47,25 +47,28 @@
     "@babel/plugin-transform-runtime": "^7.13.10",
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-react": "^7.12.13",
-    "@cyclonedx/webpack-plugin": "3.17.0",
+    "@cyclonedx/webpack-plugin": "5.3.3",
     "@jahia/eslint-config": "^2.1.2",
     "@jahia/webpack-config": "^1.1.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-lodash": "^3.3.4",
     "case-sensitive-paths-webpack-plugin": "^2.3.0",
-    "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "^6.1.0",
-    "css-loader": "^4.3.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^14.0.0",
+    "css-loader": "^7.1.5",
     "eslint": "^8.55.0",
     "eslint-plugin-jest": "^27.6.0",
     "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "file-loader": "^6.1.0",
-    "style-loader": "^1.1.3",
+    "style-loader": "^4.0.0",
     "webpack": "^5.99.4",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^6.0.1"
+  },
+  "resolutions": {
+    "**/isomorphic-fetch/node-fetch": "^2.6.7"
   },
   "packageManager": "yarn@1.22.22"
 }
