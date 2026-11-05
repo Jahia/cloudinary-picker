@@ -16,9 +16,9 @@
 
 <script type="module" src="https://unpkg.com/@google/model-viewer@${fn:escapeXml(viewerVersion)}/dist/model-viewer.min.js"></script>
 
-<model-viewer src="${baseUrl}/f_glb/${endUrl}"
-              ios-src="${baseUrl}/f_usdz/${endUrl}"
-              poster="${currentNode.getThumbnailUrl('thumbnail2')}"
+<model-viewer src="${fn:escapeXml(baseUrl)}/f_glb/${fn:escapeXml(endUrl)}"
+              ios-src="${fn:escapeXml(baseUrl)}/f_usdz/${fn:escapeXml(endUrl)}"
+              poster="${fn:escapeXml(currentNode.getThumbnailUrl('thumbnail2'))}"
               alt="${fn:escapeXml(currentNode.displayableName)}"
               camera-controls
               auto-rotate
