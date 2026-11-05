@@ -19,7 +19,7 @@
         muted
         class="cld-video-player cld-video-player-skin-dark"
         width="100%"
-        data-cld-public-id="${publicId}">
+        data-cld-public-id="${fn:escapeXml(publicId)}">
 </video>
 
 <script>
