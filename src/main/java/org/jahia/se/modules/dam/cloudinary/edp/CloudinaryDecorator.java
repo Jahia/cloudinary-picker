@@ -84,13 +84,19 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
             // For non-image content types, return the direct URL
             if (!this.isNodeType(CONTENT_TYPE_IMAGE)) {
                 if (node.hasProperty("cloudy:url")) {
-                    return node.getProperty("cloudy:url").getString();
+                    String url = node.getProperty("cloudy:url").getString();
+                    if (isWebUrl(url)) {
+                        return url;
+                    }
                 }
                 return super.getUrl();
             }
 
             // For images, build URL with transformations
             String baseUrl = node.getProperty("cloudy:baseUrl").getString();
+            if (!isWebUrl(baseUrl)) {
+                return super.getUrl();
+            }
             String endUrl = node.getProperty("cloudy:endUrl").getString();
 
             // Check if we have derived transformation from path
@@ -125,6 +131,10 @@ public class CloudinaryDecorator extends JCRNodeDecorator {
         } catch (RepositoryException e) {
             return super.getUrl();
         }
+    }
+
+    private static boolean isWebUrl(String url) {
+        return StringUtils.startsWithIgnoreCase(url, "https://") || StringUtils.startsWithIgnoreCase(url, "http://");
     }
 
     /**
